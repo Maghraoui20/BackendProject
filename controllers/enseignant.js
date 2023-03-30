@@ -16,9 +16,9 @@ export const signupEnseignant = async (req, res) => {
   } = req.body;
 
   try {
-    const enseignatexist = await Users.findOne({ phone });
+    const enseignantexist = await Users.findOne({ phone });
 
-    if (enseignatexist)
+    if (enseignantexist)
       return res.status(400).json({ message: "Enseignant existant déja !" });
 
     const new_user = {
@@ -104,49 +104,79 @@ export const Statistiqueenseignant = async (req, res) => {
   }
 };
 
-//checked
-export const updateEnseignant = async (req, res) => {
-  try {
-    const id = req.query.id;
-    const _id = id;
 
-    const enseignant = req.body;
 
-    const updateEnseignant = await Enseignant.findByIdAndUpdate(
-      _id,
-      { ...enseignant, _id },
-      { new: true }
-    );
-    res.json(updateEnseignant);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-    console.log(error.message);
-  }
-};
 
-//checked
-export const getEnseignant = async (req, res) => {
+export const findAll = async (req, res) => {
   //checked
   try {
-    const enseignant = await Enseignant.find();
-
-    res.status(200).json(enseignant);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
-//checked
-export const deleteEnseignant = async (req, res) => {
-  try {
-    const id = req.query.id;
-    const enseignant = await Enseignant.find({ _id: { $in: id } });
-    enseignant.map(async (el) => {
-      await Enseignant.findByIdAndRemove(el._id);
+    await Enseignant.find({}).then((result) => {
+      res.send(result);
     });
-
-    res.json({ message: "l'enseignant a ete supprimer avec succés !" });
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-    console.log(error.message);
+  } catch (err) {
+    console.log(err);
   }
 };
+
+export const findOne = async (req, res) => {
+  //checked
+  const id = req.params.id;
+
+  try {
+    await Enseignant.findById(id).then((result) => {
+      res.send(result);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const update = (req, res) => {
+  //checked
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!",
+    });
+  }
+
+  const id = req.params.id;
+
+  Enseignant.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then((data) => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update Enseignant with id=${id}. Maybe Enseignant was not found!`,
+        });
+      } else res.send({ message: "Enseignant was updated successfully." });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error updating Enseignant with id=" + id,
+      });
+    });
+};
+
+
+export const deleteEnseignant = (req, res) => {
+  //checked
+  const id = req.params.id;
+
+  Enseignant.findByIdAndRemove(id)
+    .then((data) => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot delete Enseignant with id=${id}. Maybe Enseignant was not found!`,
+        });
+      } else {
+        res.send({
+          message: "Enseignant was deleted successfully!",
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Could not delete Enseignant with id=" + id,
+      });
+    });
+};
+
