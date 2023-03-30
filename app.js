@@ -38,7 +38,7 @@ app.use("/alumnis", alumnisRoute);
 app.use("/demandes", demandesRoute);
 app.use("/administratif", adminRoute);
 app.use("/evenementParticipation", EvenementParticipationRoute);
-app.use("/evenement", EvenementRoute);
+app.use("/evenements", EvenementRoute);
 app.use("/offre", OffreRoute);
 app.use("/stage", stageEteRoute);
 app.use("/users", usersRoute);

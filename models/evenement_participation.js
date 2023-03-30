@@ -2,19 +2,31 @@ import mongoose from 'mongoose' ;
 
 const Evenement_participationSchema = mongoose.Schema(
   {
-    idEvenement: {
-        type: mongoose.Schema.ObjectId, 
-        ref: 'Evenement' 
-    },
     idAlumni: {
          type: mongoose.Schema.ObjectId, 
          ref: 'Alumni' 
     },
-    status: {
-        type: Boolean,
+    eventId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Event",
         required: true,
     },
-    
+    confirmation: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    isInvitation: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
+    location: {
+        type: String,
+        required: true,
+        default: "ISAMM",
+    },
+
    
 
 })

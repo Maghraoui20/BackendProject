@@ -1,32 +1,35 @@
 import mongoose from 'mongoose' ;
 
 const EvenementSchema = mongoose.Schema(
-  {
-    idAlumni: {
-        type: mongoose.Schema.ObjectId, 
-        ref: 'Alumni' 
-    },
-    idDirecteur: {
-         type: mongoose.Schema.ObjectId, 
-         ref: 'Directeur' 
-    },
-    status: {
-        type: Boolean,
-        required: true,
-    },
-    vacation: {
-        type: Boolean,
-        required: true,
-    },
-  
-    expert: {
-        type: Boolean,
-        required: true,
-    },
-    date_premier_embauche: {
+  {  eventName: {
         type: String,
         required: true,
-    },
+      },
+      eventDate: {
+        type: Date,
+        required: true,
+      },
+      eventType: {
+        type: String,
+        enum: ["JPO", "Journée d'integration", "Formation"],
+        default: "JPO",
+        required: true,
+      },
+      description: {
+        type: String,
+        required: true,
+      },
+      location: {
+        type: String,
+        required: true,
+        default: "isamm",
+      },
+
+
+
+
+
+
    
 
 })
