@@ -27,7 +27,7 @@ app.use(bodyParser.json({ limit: "40mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "40mb", extended: true }));
 app.use(cors());
 
-app.use("/enseignant", Enseignantroutes);
+app.use("/enseignants", Enseignantroutes);
 app.use("/formation", Formationroutes);
 app.use("/pfe", Pferoutes);
 app.use("/pfa", Pfaroutes);

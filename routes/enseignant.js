@@ -1,11 +1,11 @@
 import express from 'express';
 const router = express.Router();
 
-import {signupEnseignant,signin, Statistiqueenseignant, deleteEnseignant , findAll,findOne,update} from '../controllers/enseignant.js';
+import {signupEnseignant,signin, createEnseignant,Statistiqueenseignant, deleteEnseignant , findAll,findOne,update} from '../controllers/enseignant.js';
 
 // all are checked
 router.post('/signup', signupEnseignant);
-
+router.post('/create', createEnseignant);
 router.get("/getAll", findAll);
 router.get("/getbyid/:id", findOne);
 

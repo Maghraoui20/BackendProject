@@ -5,6 +5,7 @@ import Formation from "../models/formation.js";
 import Users from "../models/users.js";
 
 //checked
+
 export const signupEnseignant = async (req, res) => {
   const {
     firstname,
@@ -70,6 +71,49 @@ export const signupEnseignant = async (req, res) => {
   }
 };
 
+
+export const createEnseignant = async (req, res) => {
+  //checked
+  try {
+    // Validate request
+    if (!req.body) {
+      res.status(400).send({ message: "Content can not be empty!" });
+      return;
+    }
+    const new_user = {
+      login: req.body.login,
+      password: req.body.password,
+      email: req.body.email,
+      phone: req.body.phone,
+      role: "enseignant",
+    };
+    const userData = new Users(new_user);
+    const new_user_id = await userData.save();
+    const newData = {
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      idUser: new_user_id._id,
+      //responsableformation: req.body.responsableformation,
+ 
+    };
+    const enseignant = new Enseignant(newData);
+
+
+    const saved_enseignant= await enseignant.save(enseignant);
+    if (!saved_enseignant) {
+      return res.status(500).send({
+        message: "Some error occurred while creating the teacher.",
+      });
+    }
+    return res.status(200).send(enseignant);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating the teacher.",
+    });
+  }
+};
+
+
 //checked
 export const signin = async (req, res) => {
   const { phone, password } = req.body;
@@ -103,8 +147,6 @@ export const Statistiqueenseignant = async (req, res) => {
     res.status(500).send(error);
   }
 };
-
-
 
 
 export const findAll = async (req, res) => {
