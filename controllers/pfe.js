@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Enseignant from "../models/enseignant.js";
+import Enseignant from "../models/enseignant0.js";
 import PFE from "../models/pfe.js";
 
 export const createPfe = async (req, res) => {

@@ -4,7 +4,7 @@ import Users from "../models/users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import Enseignants from "../models/enseignant.js";
+import Enseignants from "../models/enseignant0.js";
 import Alumnis from "../models/alumnis.js";
 import Etudiants from "../models/etudiants.js";
 import Administratifs from "../models/administratifs.js";
@@ -210,7 +210,7 @@ router.post("/create", async (req, res) => {
 });
 
 // Afficher liste des users --> checked
-router.get("/", async (req, res) => {
+router.get("/getAll", async (req, res) => {
   try {
     const usrs = await Users.find();
     res.status(200).send(usrs);

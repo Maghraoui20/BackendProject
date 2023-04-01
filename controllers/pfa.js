@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Enseignant from "../models/enseignant.js";
+import Enseignant from "../models/enseignant0.js";
 import PFA from "../models/pfa.js";
 export const createpfa = async (req, res) => {
   try {
