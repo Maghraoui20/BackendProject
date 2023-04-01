@@ -176,36 +176,37 @@ router.post('/resetpassword',
 */
 
 // Ajouter user (selon role) --->checked
-router.post("/create", async (req, res) => {
+router.post('/create', async (req, res)=>{
+  //checked
   try {
-    //data=req.body;
-    const usr = new Users(req.body);
-    const savedUser = await usr.save();
-    res.status(200).send(savedUser);
-  } catch (error) {
-    res.status(400).send(error);
-  }
-  if (req.body.role == "enseignant") {
-    //data=req.body;
-    const ens = new Enseignants(req.body);
-    const savedEns = await ens.save();
-    res.send(savedEns);
-  } else if (req.body.role == "etudiant") {
-    // data=req.body;
-    const etu = new Etudiants(req.body);
-    const savedEtu = await etu.save();
-    res.status(200).send(savedEtu);
-  } else if (req.body.role == "administratif") {
-    //data=req.body;
-    const adm = new Administratifs(req.body);
-    const savedAdm = await adm.save();
-    res.send(savedAdm);
-  } else {
-    //Alumni
-    //data=req.body;
-    const alu = new Alumnis(req.body);
-    const savedAlu = await alu.save();
-    res.status(200).send(savedAlu);
+    const userexist = await Users.findOne({phone: req.body.phone, email:req.body.email})
+    // Validate request
+    if (!req.body) {
+      res.status(400).send({ message: "Content can not be empty!" });
+      return;
+    }
+    if (userexist) {
+      res.status(400).send({ message: "User exist" });
+      return;
+    }else{
+
+      const etd = new Users(req.body);
+      const salt = bcrypt.genSaltSync(10);
+      const cryptedPass =  bcrypt.hashSync (req.body.password, salt);
+      etd.password = cryptedPass;
+  
+      const saved_etudiant = await etd.save(etd);
+      if (!saved_etudiant) {
+        return res.status(500).send({
+          message: "Some error occurred while creating the Student.",
+        });
+      }
+      return res.status(200).send(etd);
+    }
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating the Student.",
+    });
   }
 });
 

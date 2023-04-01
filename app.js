@@ -17,7 +17,10 @@ import OffreRoute from "./routes/offre.routes.js";
 import directeursRoute from "./routes/directeurs.js";
 import alumnisRoute from "./routes/alumni.js";
 import stageEteRoute from "./routes/stage.routes.js";
-import usersRoute from "./routes/users.js";
+
+import usersRoute from "./routes/users0.js";
+
+
 import passwordResetRoute from "./routes/passwordReset.routes.js";
 import userRoute from "./routes/user.routes.js";
 
