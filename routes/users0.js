@@ -10,7 +10,15 @@ import {
 
 } from "../controllers/users.js";
 
+
+import {
+
+  importExcel
+} from "../controllers/etudiant.controller.js";
+
 router.post("/create", create);
+
+router.post("/importExcel", importExcel);
 //router.post("/importExcel", importExcel);
 
 router.get("/getAll", findAll);
