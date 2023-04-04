@@ -66,7 +66,7 @@ const UserSchema = mongoose.Schema({
 
   status: {
     type: String,
-    required: true,
+    required: false,
     enum: ["enseignant", "responsable formation"],
   },
   //etudiant

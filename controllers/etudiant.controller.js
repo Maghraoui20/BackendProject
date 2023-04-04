@@ -2,6 +2,7 @@ import Etudiant from "../models/etudiants.js";
 import csvtojson from "csvtojson";
 import Etudiants from "../models/etudiants.js";
 import bcrypt from 'bcrypt';
+import Users from "../models/users.js";
 
 
 
