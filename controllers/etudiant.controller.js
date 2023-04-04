@@ -155,7 +155,7 @@ export const importExcel = async (req, res) => {
     .fromFile(req.body.url)
     .then((csvData) => {
       console.log(csvData);
-      Etudiant.insertMany(csvData)
+      Users.insertMany(csvData)
         .then(function () {
           console.log("Data inserted"); //success
           res.json({ success: "success" });

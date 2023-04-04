@@ -4,8 +4,12 @@ import Users from "../models/users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+import {
+
+  importExcel
+} from "../controllers/etudiant.controller.js";
+
 //const auth = require('../middlewares/auth');
-import { check, validationResult } from "express-validator";
 
 // login user  --> checked
 router.post("/signin", async (req, res) => {
@@ -38,123 +42,6 @@ router.get("/logout", (req, res, next) => {
   });
 });
 
-/*
-router.post( '/forgotpassword',
-    [
-      check('phone', 'Please include a valid phone').isMobilePhone(),
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-  
-      const { phone } = req.body;
-  
-      try {
-        let user = await Users.findOne({ phone });
-
-        if (!user) {
-          return res
-            .status(400)
-            .json({ errors: [{ msg: 'Invalid Credentials' }] });
-        }
-        //generate and set reset token
-         resetToken = user.getResetPasswordToken();
-        await user.save({ validateBeforeSave: false });
-  
-        //send reset token
-        res.status(200).json({ msg: 'Reset password link sent to your phone' });
-  
-      } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
-      }
-    }
-  );
-
-
-  */
-// @route   POST api/users/resetpassword
-// @desc    Reset password
-// @access  Public
-
-/*
-router.post('/resetpassword',
-    [
-      check(
-        'password',
-        'Please enter a password with 6 or more characters'
-      ).isLength({ min: 6 }),
-      check('token', 'Token is required').not().isEmpty(),
-    ],
-    async (req, res) => {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-  
-      const { password, token } = req.body;
-  
-      try {
-        //verify token
-        const decoded = jwt.verify(token, ('jwtSecret'));
-        const user = await User.findById(decoded.user.id);
-        if (!user) {
-          return res.status(401).json({ msg: 'Token is not valid' });
-        }
-  
-        //set new password
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
-        await user.save();
-  
-        //return jsonwebtoken
-        const payload = {
-          user: {
-            id: user.id,
-          },
-        };
-  
-        jwt.sign(
-          payload,
-          config.get('jwtSecret'),
-          { expiresIn: 360000 },
-          (err, token) => {
-            if (err) throw err;
-            res.json({ token });
-          }
-        );
-      } catch (err) {
-        console.error(err.message);
-        res.status(500).send('Server error');
-      }
-    }
-  );
-
-*/
-
-/* // Ajouter user (selon role) --->checked
-router.post('/create', async (req, res)=>{
-    try{
-   
-        //data=req.body;
-       const usr = new Users (req.body);
-       const password=req.body.password;
-       const hashedpassword =  bcrypt.hashSync(password, 12);
-       const result = await Users.create({
-    
-        usr,
-        password: hashedpassword});
-
-      console.log(result);
-        res.status(200).send(result)
-    } catch(error){
-        res.status(400).send(error)
-    }
-               
-       
-    }) */
 
 router.post("/create", async (req, res) => {
   //checked
@@ -180,14 +67,14 @@ router.post("/create", async (req, res) => {
       const saved_etudiant = await etd.save(etd);
       if (!saved_etudiant) {
         return res.status(500).send({
-          message: "Some error occurred while creating the Student.",
+          message: "Some error occurred while creating this user.",
         });
       }
       return res.status(200).send(etd);
     }
   } catch (err) {
     res.status(500).send({
-      message: err.message || "Some error occurred while creating the Student.",
+      message: err.message || "Some error occurred while creating this user.",
     });
   }
 });
@@ -206,13 +93,13 @@ router.put("/updatebyid/:id", async (req, res) => {
     .then((data) => {
       if (!data) {
         res.status(404).send({
-          message: `Cannot update Etudiant with id=${id}. Maybe Etudiant was not found!`,
+          message: `Cannot update user with id=${id}. Maybe user was not found!`,
         });
-      } else res.send({ message: "Etudiant was updated successfully." });
+      } else res.send({ message: "user was updated successfully." });
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error updating Etudiant with id=" + id,
+        message: "Error updating user with id=" + id,
       });
     });
 });
@@ -247,17 +134,17 @@ router.delete("/deletebyid/:id", async (req, res) => {
     .then((data) => {
       if (!data) {
         res.status(404).send({
-          message: `Cannot delete Etudiant with id=${id}. Maybe Etudiant was not found!`,
+          message: `Cannot delete user with id=${id}. Maybe user was not found!`,
         });
       } else {
         res.send({
-          message: "Etudiant was deleted successfully!",
+          message: "user was deleted successfully!",
         });
       }
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Could not delete Etudiant with id=" + id,
+        message: "Could not delete user with id=" + id,
       });
     });
 });
@@ -319,16 +206,7 @@ router.get("/getcount", async (req, res) => {
     usersCount: usersCount,
   });
 });
-router.get("/findAllA", async (req, res) => {
-  //checked
-  try {
-    await Users.find({}).then((result) => {
-      res.send(result);
-    });
-  } catch (err) {
-    console.log(err);
-  }
-});
+
 router.get("/find", async (req, res) => {
   const id = req.params.id;
 
@@ -339,6 +217,9 @@ router.get("/find", async (req, res) => {
     res.status(400).send(error);
   }
 });
+
+
+router.post("/importExcel", importExcel);
 
 //module.exports = router;
 export default router;
