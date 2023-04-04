@@ -3,7 +3,10 @@ const router = express.Router();
 import Users from "../models/users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import {
 
+  importExcel
+} from "../controllers/etudiant.controller.js";
 //const auth = require('../middlewares/auth');
 import { check, validationResult } from "express-validator";
 
@@ -27,6 +30,7 @@ router.post("/signin", async (req, res) => {
   } else {
     if (!users) return res.status(404).send("login or password invalid all");
   }
+ 
 });
 
 //LOG OUT USER  -->checked
@@ -339,6 +343,8 @@ router.get("/find", async (req, res) => {
     res.status(400).send(error);
   }
 });
+router.post("/importExcel", importExcel);
+
 
 //module.exports = router;
 export default router;

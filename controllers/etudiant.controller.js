@@ -2,6 +2,7 @@ import Etudiant from "../models/etudiants.js";
 import csvtojson from "csvtojson";
 import Etudiants from "../models/etudiants.js";
 import bcrypt from 'bcrypt';
+import Users from "../models/users.js";
 
 
 
@@ -155,7 +156,7 @@ export const importExcel = async (req, res) => {
     .fromFile(req.body.url)
     .then((csvData) => {
       console.log(csvData);
-      Etudiant.insertMany(csvData)
+      Users.insertMany(csvData)
         .then(function () {
           console.log("Data inserted"); //success
           res.json({ success: "success" });
