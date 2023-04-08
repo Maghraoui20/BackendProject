@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 
+import cvRoute from "./routes/cv.js"
 import Enseignantroutes from "./routes/enseignant.js";
 import Formationroutes from "./routes/formation.js";
 import EtudiantRoute from "./routes/etudiant.js";
@@ -41,6 +42,7 @@ app.use("/evenements", EvenementRoute);
 app.use("/offre", OffreRoute);
 app.use("/stage", stageEteRoute);
 app.use("/users", usersRoute);
+app.use("/cv", cvRoute);
 app.use("/reset", passwordResetRoute);
 
 const CONNECTION_URL =
