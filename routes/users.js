@@ -190,7 +190,7 @@ router.get("/getAllEnseignant", async (req, res) => {
 // Afficher liste des users --> checked
 router.get("/getAll", async (req, res) => {
   try {
-    const usrs = await Users.find();
+    const usrs = await Users.find({ role: "enseignant" });
     res.status(200).send(usrs);
   } catch (error) {
     res.status(400).send(error);
