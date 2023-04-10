@@ -1,44 +1,26 @@
 import Cv from "../models/cv.js";
 //checked
 export const createCv = async (req, res) => {
-  const {
-    firstname,
-    lastname,
-    phone,
-    Birth_date,
-    niveau,
-    classe,
-    adresse,
-    bio,
-    experience,
-    stage,
-    email,
-    photo,
-    iduser,
-  } = req.body;
-
-  const newCv = new Cv({
-    firstname,
-    lastname,
-    phone,
-    Birth_date,
-    niveau,
-    classe,
-    adresse,
-    bio,
-    experience,
-    stage,
-    email,
-    photo,
-    iduser,
-  });
   try {
-    await newCv.save((err) => {
-      if (err) return res.status(400).json({ message: " Error " });
-    });
-    res.status(200).json({ message: "Votre Cv a été créé avec succès" });
+    // Validate request
+    if (!req.body) {
+      res.status(400).send({ message: "Content can not be empty!" });
+      return;
+    }
+
+    const cv = new Cv(req.body);
+
+    const saved_Cv = await cv.save(cv);
+    if (!saved_Cv) {
+      return res.status(500).send({
+        message: "Some error occurred while creating the CV.",
+      });
+    }
+    return res.status(200).send(cv);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating the CV.",
+    });
   }
 };
 

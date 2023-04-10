@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const stageEteSchema = new mongoose.Schema(
   {
-    Description: {
+    description: {
       type: String,
       required: false,
     },
@@ -12,18 +12,12 @@ const stageEteSchema = new mongoose.Schema(
     },
     sujet: {
       type: String,
-      required: false,
-    },
-    date_debut: {
-      type: Date,
       required: true,
     },
-
-    date_fin: {
-      type: Date,
+    duree: {
+      type: String,
       required: true,
     },
-
     id_etudiant: [{ type: mongoose.Schema.ObjectId, ref: "Etudiant" }],
   },
   {
