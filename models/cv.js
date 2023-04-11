@@ -43,10 +43,6 @@ const cvSchema = mongoose.Schema({
         type: String,
         required: true,
       },
-      emplacement: {
-        type: String,
-        required: true,
-      },
       date_debut: {
         type: Date,
         required: true,
