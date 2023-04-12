@@ -29,26 +29,54 @@ const cvSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  bio: {
-    type: String,
-    required: false,
-  },
   email: {
     type: String,
     required: false,
   },
-  experience: {
-    type: String,
-    required: false,
-  },
+  experiences: [
+    {
+      title: {
+        type: String,
+        required: true,
+      },
+      description: {
+        type: String,
+        required: true,
+      },
+      date_debut: {
+        type: Date,
+        required: true,
+      },
+      date_fin: {
+        type: Date,
+        required: true,
+      },
+    },
+  ],
+  stages: [
+    {
+      sujet: {
+        type: String,
+        required: true,
+      },
+      societe: {
+        type: String,
+        required: true,
+      },
+      duree: {
+        type: String,
+        required: true,
+      },
+      type: {
+        type: String,
+        enum: ["Stage d'ete", "PFA", "PFE"],
+        required: true,
+      },
+    },
+  ],
   photo: {
     type: String,
     required: false,
-  },
-  stage: {
-    type: String,
-    required: false,
-    enum: ["stage d'été", "stage PFE"],
   },
   iduser: [{ type: mongoose.Schema.ObjectId, ref: "users" }],
 });
