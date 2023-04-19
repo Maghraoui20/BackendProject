@@ -2,6 +2,7 @@ import Enseignant from "../models/enseignant.js";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'; 
 import Formation from "../models/formation.js";
+import Alumins from "../models/alumnis.js";
 
 //checked
 export const signupEnseignant = async (req, res) => {
@@ -128,4 +129,14 @@ export const deleteEnseignant = async (req, res) => {
           res.status(404).json({ message: error.message });
           console.log(error.message)
         }
-      };
+};
+export const listeAlumnis = async (req, res) => {
+  
+  try{
+    const newAlumnis = await Alumins.find({demande: false, report: false});
+    const oldAlumnis = await Alumins.find({demande: false, report: true});
+    res.status(200).json( newAlumnis, oldAlumnis );
+  }catch{
+    res.status(404).json({ message: error.message });
+  }
+};
