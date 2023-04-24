@@ -1,10 +1,8 @@
 import Etudiant from "../models/etudiants.js";
 import csvtojson from "csvtojson";
 import Etudiants from "../models/etudiants.js";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 import Users from "../models/users.js";
-
-
 
 export const create = async (req, res) => {
   //checked
@@ -17,7 +15,7 @@ export const create = async (req, res) => {
 
     const etd = new Etudiant(req.body);
     const salt = bcrypt.genSaltSync(10);
-    const cryptedPass =  bcrypt.hashSync (req.body.password, salt);
+    const cryptedPass = bcrypt.hashSync(req.body.password, salt);
     etd.password = cryptedPass;
 
     const saved_etudiant = await etd.save(etd);
@@ -33,11 +31,6 @@ export const create = async (req, res) => {
     });
   }
 };
-
-
-
-
-
 export const findAll = async (req, res) => {
   //checked
   try {
@@ -48,7 +41,6 @@ export const findAll = async (req, res) => {
     console.log(err);
   }
 };
-
 export const findOne = async (req, res) => {
   //checked
   const id = req.params.id;
@@ -61,7 +53,6 @@ export const findOne = async (req, res) => {
     console.log(err);
   }
 };
-
 export const update = (req, res) => {
   //checked
   if (!req.body) {
@@ -86,14 +77,6 @@ export const update = (req, res) => {
       });
     });
 };
-
-
-
-
-
-
-
-
 export const deleteEt = (req, res) => {
   //checked
   const id = req.params.id;
@@ -116,7 +99,6 @@ export const deleteEt = (req, res) => {
       });
     });
 };
-
 export const deleteAll = (req, res) => {
   //checked
   Etudiant.deleteMany({})
@@ -189,26 +171,24 @@ export const updatePost = (req, res) => {
       });
     });
 };
-
 // login etudiant -->checked
 export const signin = async (req, res) => {
   // data=req.body;
-  const etudiant = await Etudiants.findOne({phone: req.body.phone})
-  if(!etudiant){
-  res.status(404).send('login or password invalid')
-  }else{
-  const   validPass = bcrypt.compareSync(req.body.password , etudiant.password)
-  
-  if(!validPass){
-     res.status(401).send('login or password invalid')
-  }else{
-    const payload = {
-         _id: admin._id,
-         login: etudiant.login
-     }
-    const token = jwt.sign(payload, '123456')
-     res.status(200).send({success:true, mytoken: token , model: etudiant,
-     })
+  const etudiant = await Etudiants.findOne({ phone: req.body.phone });
+  if (!etudiant) {
+    res.status(404).send("login or password invalid");
+  } else {
+    const validPass = bcrypt.compareSync(req.body.password, etudiant.password);
+
+    if (!validPass) {
+      res.status(401).send("login or password invalid");
+    } else {
+      const payload = {
+        _id: admin._id,
+        login: etudiant.login,
+      };
+      const token = jwt.sign(payload, "123456");
+      res.status(200).send({ success: true, mytoken: token, model: etudiant });
+    }
   }
-  }
-  }
+};
