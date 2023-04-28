@@ -21,6 +21,16 @@ export const findAll = async (req, res) => {
     console.log(err);
   }
 };
+export const findAllalumn = async (req, res) => {
+  //checked
+  try {
+    await Alumni.find({}).then((result) => {
+      res.send(result);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 export const create = async (req, res) => {
   try {
     // Validate request
@@ -29,28 +39,32 @@ export const create = async (req, res) => {
       return;
     }
     const body = {
-      "firstname": req.body.firstname,
-      "lastname": req.body.lastname,
-      "login": req.body.login,    
-      "password": req.body.password,
-      "email": req.body.email,
-      "phone": req.body.phone,
-      "Birth_date":req.body.Birth_date,
-      "Cv": req.body.cv,
-      "pays": req.body.pays,
-      "societe": req.body.societe,
-      "promotion": req.body.promotion,    
-      "date_diplome": req.body.date_diplome,
-      "date_embauche": req.body.date_embauche,
-      "demande": false,
-      "report": false,
-      "code":UniqueString(),
-    }
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      login: req.body.login,
+      password: req.body.password,
+      email: req.body.email,
+      phone: req.body.phone,
+      Birth_date: req.body.Birth_date,
+      Cv: req.body.cv,
+      pays: req.body.pays,
+      societe: req.body.societe,
+      promotion: req.body.promotion,
+      date_diplome: req.body.date_diplome,
+      date_embauche: req.body.date_embauche,
+      demande: false,
+      report: false,
+      code: UniqueString(),
+    };
 
     const alum = new Alumni(body);
-    
+
     const saved_alumni = await alum.save(alum);
-    const mail = "Bonjour "+ body.firstname +", votre code compte alumni est : " + body.code; 
+    const mail =
+      "Bonjour " +
+      body.firstname +
+      ", votre code compte alumni est : " +
+      body.code;
     await sendEmail(body.email, "Votre code compte Alumni", mail);
     if (!saved_alumni) {
       return res.status(500).send({
@@ -104,24 +118,25 @@ export const findOne = async (req, res) => {
   const id = req.params.id;
 
   try {
-    await Users.findById(id).then((result) => {
+    await Alumni.findById(id).then((result) => {
       res.send(result);
     });
   } catch (err) {
     console.log(err);
   }
 };
-export const getStatus = async (req, res) => { 
+export const getStatus = async (req, res) => {
   const code = req.params.code;
 
   try {
-    await Alumni.findOne({"code": code}).then((result) => {
-      if (result.demande === false){
+    await Alumni.findOne({ code: code }).then((result) => {
+      if (result.demande === false) {
         res.send({ message: "Dossier pas encore accepté" });
-      }else{
-        res.send({message :"Dossier accepté, vous pouvez vous connecter à votre espace"});
+      } else {
+        res.send({
+          message: "Dossier accepté, vous pouvez vous connecter à votre espace",
+        });
       }
-      
     });
   } catch (err) {
     console.log(err);
@@ -157,58 +172,24 @@ export const getalumnipays = async (req, res) => {
     console.log(error.message);
   }
 };
-export const validerAlumnis = async(req, res) => {
-  const data = {
-    "demande" : true
-  }
+export const getAlumniStatistics = async (req, res) => {
+  const alumniData = await Alumni.find();
 
-  const id = req.params.id;
+  const alumniByCountry = await Alumni.aggregate([
+    { $group: { _id: "$pays", count: { $sum: 1 } } },
+  ]);
 
-  Alumni.findByIdAndUpdate(id, data, { useFindAndModify: false })
-    .then((item) => {
-      if (!item) {
-        res.status(404).send({
-          message: `Cannot update user with id=${id}. Maybe user was not found!`,
-        });
-      } else{ 
-        //success lazem nthabet ml item chniya fiha
+  const alumniByCompany = await Alumni.aggregate([
+    { $group: { _id: "$societe", count: { $sum: 1 } } },
+  ]);
 
-        res.send({ message: "user was updated successfully." });
-    }
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error updating user with id=" + id,
-      });
-    });
-};
-export const getAlumniStatistics = (req, res) => {
-  
-  // agréger les statistiques par pays
-  const alumniByCountry = Alumni.reduce((acc, alumni) => {
-    const country = alumni.country;
-    acc[country] = acc[country] ? acc[country] + 1 : 1;
-    return acc;
-  }, {});
+  const alumniByGraduationYear = await Alumni.aggregate([
+    { $group: { _id: "$promotion", count: { $sum: 1 } } },
+  ]);
 
-  // agréger les statistiques par société
-  const alumniByCompany = Alumni.reduce((acc, alumni) => {
-    const company = alumni.company;
-    acc[company] = acc[company] ? acc[company] + 1 : 1;
-    return acc;
-  }, {});
-
-  // agréger les statistiques par promotion
-  const alumniByGraduationYear = Alumni.reduce((acc, alumni) => {
-    const year = alumni.graduationYear;
-    acc[year] = acc[year] ? acc[year] + 1 : 1;
-    return acc;
-  }, {});
-
-  // retourner les statistiques agrégées
   res.send({
-    byCountry: alumniByCountry,
-    byCompany: alumniByCompany,
-    byGraduationYear: alumniByGraduationYear,
+    alumniByCountry,
+    alumniByCompany,
+    alumniByGraduationYear,
   });
-}
+};
