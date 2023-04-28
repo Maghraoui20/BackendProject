@@ -9,7 +9,6 @@ import {
   findOne,
   findAllA,
   getStatus,
-  getAlumniStatistics,
   findAllalumn,
   getAlumniStatistics
 } from "../controllers/alumni.js";
