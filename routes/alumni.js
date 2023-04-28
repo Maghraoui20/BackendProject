@@ -9,6 +9,7 @@ import {
   findOne,
   findAllA,
   getStatus,
+  getAlumniStatistics
 } from "../controllers/alumni.js";
 
 router.get("/getAll", findAll); //-->checked
@@ -18,5 +19,6 @@ router.put("/updatebyid/:id", update);
 router.get("/getbyid/:id", findOne);
 router.get("/getalumnipays", getalumnipays); // ---> checked
 router.get("/check/:code", getStatus);
+
 
 export default router;

@@ -1,30 +1,50 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const pfeSchema = mongoose.Schema({
-    Description: { type: String, required: false },
-    societe: { type: String, required: false },
-    sujet: { type: String, required: false },
-
-    type: {
-        type: String,
-        required: false,
-    },
-    duree: {
-        type: Number,
-        required: false,
-    },
-
-    date_debut: {
-        type: Date,
-        required: false,
-    },
-
-    id_enseignant: { type: mongoose.Schema.ObjectId, ref: 'Enseignant' },
-
-    id_etudiant: [{ type: mongoose.Schema.ObjectId, ref: 'Etudiant' }],
-
-
-
-
-})
-const pfe = mongoose.model('listepfe', pfeSchema);
+  description: {
+    type: String,
+    required: true,
+  },
+  sujet: {
+    type: String,
+    required: true,
+  },
+  technologies: {
+    type: String,
+    required: true,
+  },
+  societe: {
+    type: String,
+    required: true,
+  },
+  duree: {
+    type: String,
+    required: true,
+  },
+  statutStage: {
+    type: String,
+    required: true,
+    enum: ["pas encore commencé", "en cours", "validé"],
+  },
+  dateDébutStage: {
+    type: Date,
+    required: true,
+  },
+  dateFinStage: {
+    type: Date,
+    required: true,
+  },
+  id_enseignant: { type: mongoose.Schema.ObjectId, ref: "users" },
+  emailEnseignant: {
+    type: String,
+    required: false,
+  },
+  emailEtudiant: {
+    type: String,
+    required: false,
+  },
+  id_etudiant: [{ type: mongoose.Schema.ObjectId, ref: "users" }],
+  pays:{type:String,
+  required:true}
+});
+const pfe = mongoose.model("listepfe", pfeSchema);
 export default pfe;

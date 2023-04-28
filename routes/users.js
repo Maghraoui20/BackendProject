@@ -3,6 +3,9 @@ const router = express.Router();
 import Users from "../models/users.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import Token from "../models/token.model.js";
+import schedule from 'node-schedule';
+import sendEmail from "../utils/sendEmail.js";
 
 import {
 
@@ -42,6 +45,97 @@ router.get("/logout", (req, res, next) => {
     message: "Logged out",
   });
 });
+
+
+
+
+router.post("/sendmaildiplome", async (req, res) => {
+  try {
+   
+    let user = await Users.findOne({ date_diplome: null });
+    if (!user)
+      return res
+        .status(409)
+        .send({ message: "User with given email does not exist!" });
+
+   
+    const url = `http://localhost:3000/update-etudiant-cv`;
+    schedule.scheduleJob('0 0 1 */7 *', async function () { 
+      const data = await Users.find({role:'etudiant'})
+      console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); //chaque mois mois du juillet
+      data.forEach(async (user) => {
+        await sendEmail(user.email, "Add date d'optention du diplome", url);
+      });
+    });
+    res
+      .status(200)
+      .send({ message: "Password reset link sent to your email account" });
+  } catch (error) {
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/sendmailmajcompetences", async (req, res) => {
+  try {
+   
+    let user = await Users.find();
+    if (!user)
+      return res
+        .status(409)
+        .send({ message: "User with given email does not exist!" });
+
+   
+    const url = `http://localhost:3000/signin`;
+    schedule.scheduleJob('0 0 1 */7 *', async function () { 
+      const data = await Users.find({role:'etudiant'})
+      console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); // chaque mois du juillet fin sem2
+      data.forEach(async (user) => {
+        await sendEmail(user.email, "faire des mise à jour des compétences acquises", url);
+      });
+    });
+
+    schedule.scheduleJob('0 0 1 */2 *', async function () { 
+      const data = await Users.find({role:'etudiant'})
+      console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); //mois du fevrier fin sem1
+      data.forEach(async (user) => {
+        await sendEmail(user.email, "faire des mise à jour des compétences acquises", url);
+      });
+    });
+    res
+      .status(200)
+      .send({ message: "Password reset link sent to your email account" });
+  } catch (error) {
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
+router.post("/sendmailtravail", async (req, res) => {
+  try {
+   
+    let user = await Users.find();
+    if (!user)
+      return res
+        .status(409)
+        .send({ message: "User with given email does not exist!" });
+
+   
+    const url = `http://localhost:3000/signin`;
+    schedule.scheduleJob('0 0 1 */6 *', async function () { 
+      const data = await Users.find({role:'etudiant'})
+      console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); // chaque mois du juin fin sem2
+      data.forEach(async (user) => {
+        await sendEmail(user.email, "l'email contient un lien qui l'ammène vers l'application pour ajouter un nouveau travail", url);
+      });
+    });
+
+    res
+      .status(200)
+      .send({ message: "Password reset link sent to your email account" });
+  } catch (error) {
+    res.status(500).send({ message: "Internal Server Error" });
+  }
+});
+
 
 
 router.post("/create", async (req, res) => {
@@ -233,6 +327,10 @@ router.post("/importExcel", importExcel);
 
 
 router.post("/importExcel", importExcel);
+
+
+
+
 
 //module.exports = router;
 export default router;
