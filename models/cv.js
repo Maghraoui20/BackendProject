@@ -78,7 +78,7 @@ const cvSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  iduser: [{ type: mongoose.Schema.ObjectId, ref: "users" }],
+  iduser: { type: mongoose.Schema.ObjectId, ref: "users" },
 });
 
 const cv = mongoose.model("cv", cvSchema);
