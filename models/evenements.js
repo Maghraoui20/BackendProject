@@ -25,7 +25,10 @@ const EvenementSchema = mongoose.Schema(
         required: true,
         default: "isamm",
       },
-
+saison:{
+  type:String,
+  required:false
+}
  
 
    

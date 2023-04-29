@@ -34,6 +34,20 @@ export const findAll = async (req, res) => {
   }
 };
 
+export const findAllEvent = async (req, res) => {
+
+  try {
+    console.log("ff", req.params.annee);
+
+    await Event.find({saison:req.params.annee}).then((result) => {
+      res.send(result);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
 export const findOne = async (req, res) => {
   const id = req.params.id;
 
