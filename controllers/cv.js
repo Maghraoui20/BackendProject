@@ -48,18 +48,18 @@ export const getCv = async (req, res) => {
   }
 };
 
-export const getCvByUserId = async (req, res) => {
-
-  const idstudent = req.params.iduser;
+export const getCvByIdUser = async (req, res) => {
   try {
-    await Cv.find(idstudent).then((result) => {
-      res.send(result);
-    });
-  } catch (err) {
-    console.log(err);
+    const cv = await Cv.findOne({ iduser: req.params.iduser });
+    if (!cv) {
+      return res.status(404).json({ message: 'CV not found' });
+    }
+    return res.status(200).json(cv);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: 'Server Error' });
   }
 };
-
 
 //checked
 export const updateCv = (req, res) => {
@@ -70,19 +70,19 @@ export const updateCv = (req, res) => {
     });
   }
 
-  const idstudent = req.params.iduser;
-
-  Cv.findOneAndUpdate(idstudent, req.body, { useFindAndModify: false })
+  // const iduser = req.params.iduser;
+  
+  Cv.findOneAndUpdate({ iduser: req.params.iduser }, req.body, { useFindAndModify: false })
     .then((data) => {
       if (!data) {
         res.status(404).send({
-          message: `Cannot update Cv with id=${idstudent}. Maybe Cv was not found!`,
+          message: `Cannot update Cv with iduser=${iduser}. Maybe Cv was not found!`,
         });
       } else res.send({ message: "Cv was updated successfully." });
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error updating Cv with id=" + idstudent,
+        message: "Error updating Cv with iduser=" + iduser,
       });
     });
 };
