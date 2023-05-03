@@ -20,6 +20,7 @@ import alumnisRoute from "./routes/alumni.js";
 import stageEteRoute from "./routes/stage.routes.js";
 import usersRoute from "./routes/users.js";
 import passwordResetRoute from "./routes/passwordReset.routes.js";
+import TechnologieRoute from "./routes/technologie.js"
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use(bodyParser.urlencoded({ limit: "40mb", extended: true }));
 app.use(cors());
 
 app.use("/enseignant", Enseignantroutes);
+app.use("/technologie", TechnologieRoute);
 app.use("/formation", Formationroutes);
 app.use("/pfe", Pferoutes);
 app.use("/pfa", Pfaroutes);

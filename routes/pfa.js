@@ -9,12 +9,13 @@ import {
   updatePFA,
   getSujet,
 } from "../controllers/pfa.js";
-router.post("/", createpfa);
 
-router.get("/", getPfa);
-router.delete("/delete", deletePFA);
+router.post("/createpfa", createpfa);
 
-router.patch("/:id", updatePFA);
+router.get("/getpfabyid/:id", getPfa);
+router.delete("/deletepfa", deletePFA);
+
+router.patch("/updatepfa/:id", updatePFA);
 router.get("/filtre", getFiltrePFA);
 router.put("/attribut/:id", getSujet);
 export default router;

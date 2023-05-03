@@ -1,28 +1,86 @@
 import mongoose from "mongoose";
-import Enseignant from "../models/enseignant.js";
+import axios from 'axios';
+import Users from "../models/users.js";
 import PFA from "../models/pfa.js";
+import Technologie from "../models/technologie.js"
+
+export const saveTechnologies = async (technologies) => {
+  const technologyIds = [];
+  for (const element of technologies) {
+    const existTechnologie = await Technologie.findOne({ title: element });
+    if (existTechnologie) {
+      technologyIds.push(existTechnologie._id);
+    } else {
+      const newTechnologie = new Technologie({
+        title: element,
+      });
+      const createdTechnologie = await newTechnologie.save();
+      // technologyIds.push(createdTechnologie._id);
+    }
+  }
+  return technologyIds;
+};
+
+
+
 export const createpfa = async (req, res) => {
   try {
-    // Validate request
-    if (!req.body) {
-      res.status(400).send({ message: "Content can not be empty!" });
-      return;
-    }
+    const {
+      sujet,
+      titre,
+      nbre_etudiant,
+      Description,
+      technologies,
+      id_enseignant,
+      id_etudiant,
+    } = req.body;
+
+    const technologyIds = await saveTechnologies(technologies);
+
+    const newPfa = new PFA({
+      sujet: sujet,
+      titre: titre,
+      nbre_etudiant: nbre_etudiant,
+      Description: Description,
+      technologies: technologyIds,
+      id_enseignant: id_enseignant,
+      id_etudiant: id_etudiant,
+    });
+
+    const createdPfa = await newPfa.save();
+    return res.status(200).json({
+      Message: "PFA created sucessfully",
+      Success: true,
+      data: createdPfa,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      Message: "Error creating PFA",
+      Success: false,
+      Error: error.message,
+    });
+  }
+};
+
+
+
+/*  
 
     const pf = new PFA(req.body);
 
     const saved_PFA = await pf.save(pf);
     if (!saved_PFA) {
       return res.status(500).send({
-        message: "Some error occurred while creating the Student.",
+        message: "Some error occurred while creating the PFA.",
       });
     }
     return res.status(200).send(pf);
   } catch (err) {
     res.status(500).send({
-      message: err.message || "Some error occurred while creating the Student.",
+      message: err.message || "Some error occurred while creating the PFA.",
     });
-  }
+  } */
   /*const { Description, sujet, type, technologie, nbre_etudiant, id_etudiant } =
     req.body;
   console.log(req.params.id, "parm");
@@ -48,9 +106,21 @@ export const createpfa = async (req, res) => {
     res.status(500).json({ message: err.message });
     console.log("err");
   }*/
-};
 
 export const getPfa = async (req, res) => {
+  //checked
+  const id = req.params.id;
+
+  try {
+    await PFA.findById(id).then((result) => {
+      res.send(result);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getAllPfa = async (req, res) => {
   //voir la liste des sujet PFA
   try {
     const listepfa = await PFA.find();
@@ -78,22 +148,28 @@ export const deletePFA = async (req, res) => {
 };
 
 export const updatePFA = async (req, res) => {
-  try {
-    const id = req.query.id;
-    const _id = id;
-
-    const pfa = req.body;
-
-    const updatepfa = await PFA.findByIdAndUpdate(
-      _id,
-      { ...pfa, _id },
-      { new: true }
-    );
-    res.json(updatepfa);
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-    console.log(error.message);
+  //checked
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!",
+    });
   }
+
+  const id = req.params.id;
+  
+  PFA.findByIdAndUpdate({ id }, req.body, { useFindAndModify: false })
+    .then((data) => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update pfa with id=${id}. Maybe pfa was not found!`,
+        });
+      } else res.send({ message: "PFA was updated successfully." });
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error updating PFA with id=" + id,
+      });
+    });
 };
 
 export const getFiltrePFA = async (req, res) => {
@@ -138,6 +214,7 @@ export const getFiltrePFA = async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 };
+
 export const getSujet = async (req, res) => {
   //checked
   //choisir un sujet PFA par un etudiant
