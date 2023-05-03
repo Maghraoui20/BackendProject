@@ -17,7 +17,7 @@ import adminRoute from "./routes/administratifsRoute.js";
 import OffreRoute from "./routes/offre.routes.js";
 import directeursRoute from "./routes/directeurs.js";
 import alumnisRoute from "./routes/alumni.js";
-import stageEteRoute from "./routes/stage.routes.js";
+import stageEteRoute from "./routes/stage.js";
 import usersRoute from "./routes/users.js";
 import passwordResetRoute from "./routes/passwordReset.routes.js";
 import TechnologieRoute from "./routes/technologie.js"
@@ -46,16 +46,42 @@ app.use("/stage", stageEteRoute);
 app.use("/users", usersRoute);
 app.use("/cv", cvRoute);
 app.use("/reset", passwordResetRoute);
+app.use("/saison", saisonRoute);
+
+app.use("/notification", notificationRoute);
 
 const CONNECTION_URL =
   "mongodb+srv://2ingweb:2ingweb@cluster0.l4xvlhw.mongodb.net";
+  const io = new Server();
+  
+  const options = {};
+  const server = http.createServer(options, app);
+  export const Socket = {
+    emit: function (event, data) {
+      console.log(data,"dd");
+      io.sockets.to(data.user).emit(event, data);
+    }
+  };
 const PORT = process.env.PORT || 5000;
+io.on('connect', function (socket) {
+  socket.on('join', async (user_id, callback) => {
+    socket.join(user_id);
+    callback();
+  });
+});
+
+io.attach(server);
+
 
 mongoose
   .connect(CONNECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() =>
-    app.listen(PORT, () => console.log(`Server runnig on port: ${PORT}`))
+
+   server.listen(PORT, () => console.log(`Server runnig on port: ${PORT}`))
+   
+
+  
   )
   .catch((error) => console.log(error.message));
-
+  
 mongoose.set("strictQuery", false);
