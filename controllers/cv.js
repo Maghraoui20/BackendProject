@@ -63,26 +63,26 @@ export const getCvByIdUser = async (req, res) => {
 
 //checked
 export const updateCv = (req, res) => {
-  //checked
   if (!req.body) {
     return res.status(400).send({
       message: "Data to update can not be empty!",
     });
   }
 
-  // const iduser = req.params.iduser;
+  const id = req.params.id;
   
-  Cv.findOneAndUpdate({ iduser: req.params.iduser }, req.body, { useFindAndModify: false })
+  Cv.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
     .then((data) => {
       if (!data) {
         res.status(404).send({
-          message: `Cannot update Cv with iduser=${iduser}. Maybe Cv was not found!`,
+          message: `Cannot update Cv with id=${id}. Maybe Cv was not found!`,
         });
       } else res.send({ message: "Cv was updated successfully." });
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error updating Cv with iduser=" + iduser,
+        message: "Error updating Cv with id=" + id,
       });
     });
 };
+
