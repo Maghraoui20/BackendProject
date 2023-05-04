@@ -1,7 +1,17 @@
+
 import mongoose from "mongoose";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken";
+
+
+const cvSchema = mongoose.Schema({
+  title: String
+});
+
 
 const UserSchema = mongoose.Schema({
   //all
+  //Cv: cvSchema,
   login: {
     type: String,
     required: true,
@@ -74,10 +84,7 @@ const UserSchema = mongoose.Schema({
     type: Date,
     required: false,
   },
-  Cv: {
-    type: String,
-    required: false,
-  },
+
 
   depot: {
     type: String,
@@ -100,6 +107,20 @@ const UserSchema = mongoose.Schema({
     enum: ["alumni", "actuel"],
   },
 });
+
+// Sign JWT and return
+UserSchema.methods.getSignedJwtToken = function () {
+  console.log("1111111111111111", 'generate')
+  return jwt.sign({ id: this._id, role: this.role }, 'generate', {
+    expiresIn: 346000
+  })
+}
+
+
+UserSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password)
+}
+
 
 const Users = mongoose.model("users", UserSchema);
 export default Users;

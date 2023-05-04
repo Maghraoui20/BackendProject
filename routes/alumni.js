@@ -20,7 +20,9 @@ router.get("/getAllA", findAll);
 router.put("/updatebyid/:id", update);
 router.get("/getbyid/:id", findOne);
 router.get("/getalumnipays", getalumnipays); // ---> checked
+
 router.get("/check/:code", getStatus);
+
 router.get("/stat", getAlumniStatistics);
 
 

@@ -19,6 +19,9 @@ import directeursRoute from "./routes/directeurs.js";
 import alumnisRoute from "./routes/alumni.js";
 import stageEteRoute from "./routes/stage.js";
 import usersRoute from "./routes/users.js";
+
+import usersRoutes from "./routes/usersRoutes.js";
+
 import passwordResetRoute from "./routes/passwordReset.routes.js";
 import saisonRoute from './routes/saison.js';
 import notificationRoute from './routes/notification.js'
@@ -45,6 +48,9 @@ app.use("/evenements", EvenementRoute);
 app.use("/offre", OffreRoute);
 app.use("/stage", stageEteRoute);
 app.use("/users", usersRoute);
+
+app.use("/usersauth", usersRoutes);
+
 app.use("/cv", cvRoute);
 app.use("/reset", passwordResetRoute);
 app.use("/saison", saisonRoute);

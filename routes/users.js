@@ -174,6 +174,8 @@ router.post("/create", async (req, res) => {
   }
 });
 
+
+
 router.put("/updatebyid/:id", async (req, res) => {
   //checked
   if (!req.body) {
@@ -198,6 +200,8 @@ router.put("/updatebyid/:id", async (req, res) => {
       });
     });
 });
+
+
 router.put("/update/:id", async (req, res) => {
   //checked
   if (!req.body) {
@@ -222,6 +226,7 @@ router.put("/update/:id", async (req, res) => {
       });
     });
 });
+
 router.delete("/deletebyid/:id", async (req, res) => {
   const id = req.params.id;
 
@@ -322,6 +327,7 @@ router.get("/find", async (req, res) => {
     res.status(400).send(error);
   }
 });
+
 router.post("/importExcel", importExcel);
 
 

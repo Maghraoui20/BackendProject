@@ -12,6 +12,7 @@ import {
   acceptee,
   reportAlumnis,
 } from "../controllers/enseignant.js";
+import { isEnseignant } from "../middlewares/verifytoken.js";
 
 // all are checked
 router.post("/signup", signupEnseignant);
@@ -20,7 +21,7 @@ router.delete("/delete", deleteEnseignant);
 router.patch("/", updateEnseignant);
 router.post("/signin", signin);
 router.get("/getcount", Statistiqueenseignant);
-router.get("/lists", listAlumnis);
+router.get("/lists", isEnseignant,listAlumnis);
 router.post("/acceptAlumni/:id", acceptee);
 router.put("/report/:id", reportAlumnis);
 
