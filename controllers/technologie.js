@@ -43,6 +43,29 @@ export const DeleteTechnologie = async (req, res) => {
   }
 };
 
+export const getTechnologiebyid = async (req, res) => {
+  //checked
+  const id = req.params.id;
+
+  try {
+    await Technologie.findById(id).then((result) => {
+      res.send(result);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const getTechnologiebytitle = async (req, res) => {
+  const title = req.params.title;
+
+  try {
+    const result = await Technologie.findOne({ title });
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 export const GetAllTechnologies = async (req, res) => {
 
