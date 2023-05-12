@@ -16,7 +16,7 @@ const pfaSchema = mongoose.Schema({
     default: 1
   },
 
-  Description: {
+  description: {
     type: String,
     required: false,
   },

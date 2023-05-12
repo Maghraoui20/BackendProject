@@ -8,11 +8,14 @@ import {
   //getFiltrePFA,
   getPfa,
   updatepfa,
+  getTechnologiesByPfaId,
+  getStudentByPfaId,
   //getSujet,
 } from "../controllers/pfa.js";
 
 router.post("/createpfa", createpfa);
-
+router.get("/gettechnologiebypfaid/:id", getTechnologiesByPfaId);
+router.get("/getstudentbypfaid/:id", getStudentByPfaId);
 router.get("/getpfabyid/:id", getPfa);
 router.delete("/deletepfa/:id", deletePFA);
 router.get("/getAllPfa", getAllPfa)

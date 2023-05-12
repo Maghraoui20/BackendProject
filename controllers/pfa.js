@@ -21,6 +21,41 @@ export const saveTechnologies = async (technologies) => {
   return technologyIds;
 };
 
+export const getTechnologiesByPfaId = async (req, res) => {
+  try {
+    const pfaId = req.params.id;
+    const pfa = await PFA.findById(pfaId);
+    if (!pfa) {
+      return res.status(404).json({ message: 'PFA not found' });
+    }
+    const technologies = await Technologie.find(
+      { _id: { $in: pfa.technologies } },
+      { title: 1, _id: 0 } // projection to include only the title field
+    );
+    res.status(200).json(technologies);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: 'Error getting technologies by PFA ID' });
+  }
+};
+
+export const getStudentByPfaId = async (req, res) => {
+  try {
+    const pfaId = req.params.id;
+    const pfa = await PFA.findById(pfaId);
+    if (!pfa) {
+      return res.status(404).json({ message: 'PFA not found' });
+    }
+    const id_etudiant = await Users.find(
+      { _id: { $in: pfa.id_etudiant } },
+      { firstname: 1, lastname: 1, _id: 0 }
+    );
+    res.status(200).json(id_etudiant);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: 'Error getting student by PFA ID' });
+  }
+};
 
 
 export const createpfa = async (req, res) => {
@@ -29,7 +64,7 @@ export const createpfa = async (req, res) => {
       sujet,
       titre,
       nbre_etudiant,
-      Description,
+      description,
       technologies,
       id_enseignant,
       id_etudiant,
@@ -41,7 +76,7 @@ export const createpfa = async (req, res) => {
       sujet: sujet,
       titre: titre,
       nbre_etudiant: nbre_etudiant,
-      Description: Description,
+      description: description,
       technologies: technologyIds,
       id_enseignant: id_enseignant,
       id_etudiant: id_etudiant,
@@ -70,7 +105,7 @@ export const updatepfa = async (req, res) => {
       sujet,
       titre,
       nbre_etudiant,
-      Description,
+      description,
       technologies,
       id_enseignant,
       id_etudiant,
@@ -82,7 +117,7 @@ export const updatepfa = async (req, res) => {
       sujet: sujet,
       titre: titre,
       nbre_etudiant: nbre_etudiant,
-      Description: Description,
+      description: description,
       technologies: technologyIds,
       id_enseignant: id_enseignant,
       id_etudiant: id_etudiant,

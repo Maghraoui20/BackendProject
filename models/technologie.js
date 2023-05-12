@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 const technologieSchema = mongoose.Schema({
   title: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 
