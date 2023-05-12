@@ -26,8 +26,6 @@ export const CreateTechnologie = async (req, res) => {
   }
 };
 
-
-
 export const DeleteTechnologie = async (req, res) => {
   try {
     const { _id } = req.params;
