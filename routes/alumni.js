@@ -11,6 +11,9 @@ import {
   getStatus,
   getAlumniStatistics,
   findAllalumn,
+  statistiqueChomage,
+  getAlumniByPromotion,
+  addDemande,
 } from "../controllers/alumni.js";
 
 router.get("/getAll", findAll); //-->checked644040b17cb93a4783d4d521
@@ -22,5 +25,8 @@ router.get("/getbyid/:id", findOne);
 router.get("/getalumnipays", getalumnipays); // ---> checked
 router.get("/check/:code", getStatus);
 router.get("/stat", getAlumniStatistics);
+router.get("/statchomage", statistiqueChomage);
+router.get("/getAlumniByPromotion", getAlumniByPromotion);
+router.post("/addDemande", addDemande);
 
 export default router;
