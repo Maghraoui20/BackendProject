@@ -39,6 +39,43 @@ export const getTechnologiesByPfaId = async (req, res) => {
   }
 };
 
+
+export const getPfaWithoutEtudiant = async (req, res) => {
+  try {
+    const pfaList = await PFA.find({ id_etudiant: { $in: [null, undefined] } }).exec();
+    return res.json(pfaList);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
+
+
+export const updatePfaIdEtudiant = async (req, res) => {
+  const { id } = req.params;
+  const { id_etudiant } = req.body;
+
+  try {
+    const pfa = await PFA.findById(id);
+
+    if (!pfa) {
+      return res.status(404).json({ message: "Pfa not found" });
+    }
+
+    // update only if id_etudiant is provided
+    if (id_etudiant !== undefined) {
+      pfa.id_etudiant = id_etudiant === null ? '' : id_etudiant;
+    }
+
+    const updatedPfa = await pfa.save();
+    res.json(updatedPfa);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
 export const getStudentByPfaId = async (req, res) => {
   try {
     const pfaId = req.params.id;

@@ -10,9 +10,13 @@ import {
   updatepfa,
   getTechnologiesByPfaId,
   getStudentByPfaId,
+  getPfaWithoutEtudiant,
+  updatePfaIdEtudiant,
   //getSujet,
 } from "../controllers/pfa.js";
 
+router.post("/updateidstudentinpfa/:id", updatePfaIdEtudiant);
+router.get("/getpfawithoutetudiant", getPfaWithoutEtudiant);
 router.post("/createpfa", createpfa);
 router.get("/gettechnologiebypfaid/:id", getTechnologiesByPfaId);
 router.get("/getstudentbypfaid/:id", getStudentByPfaId);
