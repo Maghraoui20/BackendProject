@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import Token from "../models/token.model.js";
 import schedule from 'node-schedule';
 import sendEmail from "../utils/sendEmail.js";
+import multer from "multer";
+import csvtojson from "csvtojson";
 
 import {
 
@@ -329,6 +331,48 @@ router.post("/importExcel", importExcel);
 router.post("/importExcel", importExcel);
 
 
+
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Set the destination folder for uploaded files
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + '.csv'); // Set the filename for the uploaded file
+  }
+});
+
+// Create an upload object
+const upload = multer({ storage: storage });
+
+// Define the route to handle file uploads
+router.post('/uploadFile', upload.single('csvFile'),(req, res) => {
+ // router.post('/uploadFile',(req, res) => {
+  if (!req.file) {
+    res.status(400).send('No file uploaded.');
+  } else {
+    // File uploaded successfully
+    
+    const csvFilePath = req.file.path;
+    csvtojson()
+      .fromFile(csvFilePath)
+       .then((csvData) => {
+         console.log(csvData);
+         Users.insertMany(csvData)
+           .then(function () {
+             console.log("Data inserted"); //success
+             res.json({ success: "success" });
+            // res.send('File uploaded!');
+           })
+           .catch(function (error) {
+             console.log(error); //failure
+           });
+       });
+     
+
+  }
+});
 
 
 
