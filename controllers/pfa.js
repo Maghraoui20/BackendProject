@@ -39,6 +39,58 @@ export const getTechnologiesByPfaId = async (req, res) => {
   }
 };
 
+
+export const getPfaWithoutEtudiant = async (req, res) => {
+  try {
+    const pfaList = await PFA.find({ id_etudiant: { $in: [null, undefined] } }).exec();
+    return res.json(pfaList);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+}
+
+export const getPfaNotValidated = async (req, res) => {
+  try {
+    const pfaList = await PFA.find({ isValidated: false }).exec();
+    return res.json(pfaList);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+export const updatePfaIdEtudiant = async (req, res) => {
+  const { id } = req.params;
+  const { id_etudiant } = req.body;
+
+  try {
+    const existingPfa = await PFA.findOne({ id_etudiant });
+
+    if (existingPfa) {
+      return res.status(400).json({ message: "This student is already assigned to another PFA" });
+    }
+
+    const pfa = await PFA.findById(id);
+
+    if (!pfa) {
+      return res.status(404).json({ message: "Pfa not found" });
+    }
+
+    // update only if id_etudiant is provided
+    if (id_etudiant !== undefined) {
+      pfa.id_etudiant = id_etudiant === null ? '' : id_etudiant;
+    }
+
+    const updatedPfa = await pfa.save();
+    res.json(updatedPfa);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 export const getStudentByPfaId = async (req, res) => {
   try {
     const pfaId = req.params.id;
@@ -57,6 +109,73 @@ export const getStudentByPfaId = async (req, res) => {
   }
 };
 
+export const getAllTeachersByPfa = async (req, res) => {
+  try {
+    const allPfa = await PFA.find();
+    const teacherPromises = allPfa.map(async (pfa) => {
+      const teachers = await Users.find(
+        { _id: { $in: pfa.id_enseignant } },
+        { firstname: 1, lastname: 1, _id: 0 }
+      );
+      return teachers;
+    });
+    const allTeachers = await Promise.all(teacherPromises);
+    res.status(200).json(allTeachers);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: 'Error getting all teachers by PFA' });
+  }
+};
+
+
+
+export const getTeacherByPfaId = async (req, res) => {
+  try {
+    const pfaId = req.params.id;
+    const pfa = await PFA.findById(pfaId);
+    if (!pfa) {
+      return res.status(404).json({ message: 'PFA not found' });
+    }
+    const id_enseignant = await Users.find(
+      { _id: { $in: pfa.id_enseignant } },
+      { firstname: 1, lastname: 1, _id: 0 }
+    );
+    res.status(200).json(id_enseignant);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: 'Error getting teacher by PFA ID' });
+  }
+};
+
+export const getPfaByEnseignantId = async (req, res) => {
+  try {
+    const pfas = await PFA.find({ id_enseignant: req.params.id }).exec();
+    res.json(pfas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const updatePfaIsValidated = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pfa = await PFA.findById(id);
+
+    if (!pfa) {
+      return res.status(404).json({ message: "Pfa not found" });
+    }
+
+    pfa.isValidated = true;
+
+    const updatedPfa = await pfa.save();
+    res.json(updatedPfa);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 export const createpfa = async (req, res) => {
   try {
@@ -68,6 +187,7 @@ export const createpfa = async (req, res) => {
       technologies,
       id_enseignant,
       id_etudiant,
+      isValidated,
     } = req.body;
 
     const technologyIds = await saveTechnologies(technologies);
@@ -80,6 +200,7 @@ export const createpfa = async (req, res) => {
       technologies: technologyIds,
       id_enseignant: id_enseignant,
       id_etudiant: id_etudiant,
+      isValidated: isValidated,
     });
 
     const createdPfa = await newPfa.save();
@@ -109,6 +230,7 @@ export const updatepfa = async (req, res) => {
       technologies,
       id_enseignant,
       id_etudiant,
+      isValidated,
     } = req.body;
 
     const technologyIds = await saveTechnologies(technologies);
@@ -121,6 +243,7 @@ export const updatepfa = async (req, res) => {
       technologies: technologyIds,
       id_enseignant: id_enseignant,
       id_etudiant: id_etudiant,
+      isValidated: isValidated,
     };
 
     const result = await PFA.updateOne({ _id: pfaId }, updatedPfa);
