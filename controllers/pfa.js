@@ -50,6 +50,16 @@ export const getPfaWithoutEtudiant = async (req, res) => {
   }
 }
 
+export const getPfaNotValidated = async (req, res) => {
+  try {
+    const pfaList = await PFA.find({ isValidated: false }).exec();
+    return res.json(pfaList);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 export const updatePfaIdEtudiant = async (req, res) => {
   const { id } = req.params;
@@ -142,6 +152,24 @@ export const getPfaByEnseignantId = async (req, res) => {
   }
 };
 
+export const updatePfaIsValidated = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const pfa = await PFA.findById(id);
+
+    if (!pfa) {
+      return res.status(404).json({ message: "Pfa not found" });
+    }
+
+    pfa.isValidated = true;
+
+    const updatedPfa = await pfa.save();
+    res.json(updatedPfa);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
 export const createpfa = async (req, res) => {
@@ -154,6 +182,7 @@ export const createpfa = async (req, res) => {
       technologies,
       id_enseignant,
       id_etudiant,
+      isValidated,
     } = req.body;
 
     const technologyIds = await saveTechnologies(technologies);
@@ -166,6 +195,7 @@ export const createpfa = async (req, res) => {
       technologies: technologyIds,
       id_enseignant: id_enseignant,
       id_etudiant: id_etudiant,
+      isValidated: isValidated,
     });
 
     const createdPfa = await newPfa.save();
@@ -195,6 +225,7 @@ export const updatepfa = async (req, res) => {
       technologies,
       id_enseignant,
       id_etudiant,
+      isValidated,
     } = req.body;
 
     const technologyIds = await saveTechnologies(technologies);
@@ -207,6 +238,7 @@ export const updatepfa = async (req, res) => {
       technologies: technologyIds,
       id_enseignant: id_enseignant,
       id_etudiant: id_etudiant,
+      isValidated: isValidated,
     };
 
     const result = await PFA.updateOne({ _id: pfaId }, updatedPfa);
