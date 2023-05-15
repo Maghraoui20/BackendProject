@@ -94,6 +94,35 @@ export const getStudentByPfaId = async (req, res) => {
   }
 };
 
+export const getTeacherByPfaId = async (req, res) => {
+  try {
+    const pfaId = req.params.id;
+    const pfa = await PFA.findById(pfaId);
+    if (!pfa) {
+      return res.status(404).json({ message: 'PFA not found' });
+    }
+    const id_enseignant = await Users.find(
+      { _id: { $in: pfa.id_enseignant } },
+      { firstname: 1, lastname: 1, _id: 0 }
+    );
+    res.status(200).json(id_enseignant);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: 'Error getting teacher by PFA ID' });
+  }
+};
+
+export const getPfaByEnseignantId = async (req, res) => {
+  try {
+    const pfas = await PFA.find({ id_enseignant: req.params.id }).exec();
+    res.json(pfas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 
 export const createpfa = async (req, res) => {
   try {
