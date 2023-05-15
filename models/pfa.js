@@ -21,6 +21,12 @@ const pfaSchema = mongoose.Schema({
     required: false,
   },
 
+  isValidated: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
+
   technologies: [
     {
       type: mongoose.Schema.ObjectId, ref:"technologie",
