@@ -94,6 +94,26 @@ export const getStudentByPfaId = async (req, res) => {
   }
 };
 
+export const getAllTeachersByPfa = async (req, res) => {
+  try {
+    const allPfa = await PFA.find();
+    const teacherPromises = allPfa.map(async (pfa) => {
+      const teachers = await Users.find(
+        { _id: { $in: pfa.id_enseignant } },
+        { firstname: 1, lastname: 1, _id: 0 }
+      );
+      return teachers;
+    });
+    const allTeachers = await Promise.all(teacherPromises);
+    res.status(200).json(allTeachers);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: 'Error getting all teachers by PFA' });
+  }
+};
+
+
+
 export const getTeacherByPfaId = async (req, res) => {
   try {
     const pfaId = req.params.id;

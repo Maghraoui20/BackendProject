@@ -69,20 +69,22 @@ export const updateCv = (req, res) => {
     });
   }
 
-  const id = req.params.id;
-  
-  Cv.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+  const id = req.params.iduser;
+
+  // Use the findOneAndUpdate method to find the CV by the iduser and update its data
+  Cv.findOneAndUpdate({ iduser: id }, req.body, { useFindAndModify: false })
     .then((data) => {
       if (!data) {
         res.status(404).send({
-          message: `Cannot update Cv with id=${id}. Maybe Cv was not found!`,
+          message: `Cannot update CV with iduser=${id}. Maybe CV was not found!`,
         });
-      } else res.send({ message: "Cv was updated successfully." });
+      } else res.send({ message: "CV was updated successfully." });
     })
     .catch((err) => {
       res.status(500).send({
-        message: "Error updating Cv with id=" + id,
+        message: "Error updating CV with iduser=" + id,
       });
     });
 };
+
 
