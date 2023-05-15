@@ -8,7 +8,7 @@ router.post('/create', createCv);
 router.get('/getall', getAllCv);
 router.get('/getbyid/:id', getCv);
 router.get('/getbyiduser/:iduser', getCvByIdUser);
-router.put('/update/:id', updateCv) // ---> params
+router.put('/update/:iduser', updateCv) // ---> params
 
 
 export default router;
