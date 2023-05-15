@@ -66,6 +66,12 @@ export const updatePfaIdEtudiant = async (req, res) => {
   const { id_etudiant } = req.body;
 
   try {
+    const existingPfa = await PFA.findOne({ id_etudiant });
+
+    if (existingPfa) {
+      return res.status(400).json({ message: "This student is already assigned to another PFA" });
+    }
+
     const pfa = await PFA.findById(id);
 
     if (!pfa) {
@@ -83,7 +89,6 @@ export const updatePfaIdEtudiant = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 
 export const getStudentByPfaId = async (req, res) => {
