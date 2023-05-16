@@ -49,7 +49,7 @@ export const getCv = async (req, res) => {
 };
 
 export const getCVByUser = async (req, res) => {
-  const { firstname, lastname } = req.body;
+  const { firstname, lastname } = req.query;
 
   try {
     const cv = await Cv.findOne({
@@ -67,6 +67,7 @@ export const getCVByUser = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
 
 export const getCvByIdUser = async (req, res) => {
   try {
