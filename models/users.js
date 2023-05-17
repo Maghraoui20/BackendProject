@@ -69,6 +69,11 @@ const UserSchema = mongoose.Schema({
     required: false,
     enum: ["enseignant", "responsable formation"],
   },
+  accessRights: {
+    type: String,
+    required: false,
+    enum: ["gestion-etudiant", "gestion-enseignant","gestion-evenement"],
+  },
   //etudiant
   Birth_date: {
     type: Date,
