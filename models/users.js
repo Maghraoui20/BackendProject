@@ -99,6 +99,11 @@ const UserSchema = mongoose.Schema({
     required: false,
     enum: ["alumni", "actuel"],
   },
+  visibility: {
+    type: String,
+    required: false,
+    enum: ["public", "private"],
+  }
 });
 
 const Users = mongoose.model("users", UserSchema);

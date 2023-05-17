@@ -374,7 +374,15 @@ router.post('/uploadFile', upload.single('csvFile'),(req, res) => {
   }
 });
 
-
+router.get('/public-users', async (req, res) => {
+  try {
+    const users = await Users.find({ visibility: 'public', role: { $in: ['etudiant', 'alumni'] } });
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 //module.exports = router;
 export default router;

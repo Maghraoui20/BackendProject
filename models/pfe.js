@@ -42,7 +42,7 @@ const pfeSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  id_etudiant: [{ type: mongoose.Schema.ObjectId, ref: "users" }],
+  id_etudiant: { type: mongoose.Schema.ObjectId, ref: "users" },
   pays:{type:String,
   required:true}
 });
