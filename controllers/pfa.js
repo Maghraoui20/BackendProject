@@ -175,6 +175,22 @@ export const updatePfaIsValidated = async (req, res) => {
   }
 };
 
+export const getStudentIdOfPFA = async (req, res) => {
+  const pfaId = req.params.id;
+
+  try {
+    const pfa = await PFA.findById(pfaId).select('id_etudiant');
+    if (!pfa) {
+      return res.status(404).json({ error: 'PFA not found' });
+    }
+    const studentId = pfa.id_etudiant;
+    return res.json({ studentId });
+  } catch (error) {
+    console.error('Error retrieving student ID:', error);
+    return res.status(500).json({ error: 'Server error' });
+  }
+};
+
 
 export const createpfa = async (req, res) => {
   try {
