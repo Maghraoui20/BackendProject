@@ -24,6 +24,9 @@ router.get("/getpfawithoutetudiant", getPfaWithoutEtudiant);
 router.get("/getpfanotvalidated", getPfaNotValidated);
 router.get("/getallteachers", getAllTeachersByPfa);
 router.get("/getpfabyenseignant/:id", getPfaByEnseignantId);
+
+router.get("/getpfabyidetudiant/:id", getpfabyidetudiant);
+
 router.post("/createpfa", createpfa);
 router.get("/gettechnologiebypfaid/:id", getTechnologiesByPfaId);
 router.get("/getstudentbypfaid/:id", getStudentByPfaId);

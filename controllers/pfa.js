@@ -138,6 +138,19 @@ export const getPfaByEnseignantId = async (req, res) => {
   }
 };
 
+
+
+
+export const getpfabyidetudiant= async (req, res) => {
+  try {
+    const pfas = await PFA.findOne({ id_etudiant: req.params.id });
+    res.json(pfas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export const getTechnologiesByPfaId = async (req, res) => {
   try {
     const pfaId = req.params.id;
