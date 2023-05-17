@@ -21,25 +21,6 @@ export const saveTechnologies = async (technologies) => {
   return technologyIds;
 };
 
-export const getTechnologiesByPfaId = async (req, res) => {
-  try {
-    const pfaId = req.params.id;
-    const pfa = await PFA.findById(pfaId);
-    if (!pfa) {
-      return res.status(404).json({ message: 'PFA not found' });
-    }
-    const technologies = await Technologie.find(
-      { _id: { $in: pfa.technologies } },
-      { title: 1, _id: 0 } // projection to include only the title field
-    );
-    res.status(200).json(technologies);
-  } catch (e) {
-    console.log(e);
-    res.status(500).json({ message: 'Error getting technologies by PFA ID' });
-  }
-};
-
-
 export const getPfaWithoutEtudiant = async (req, res) => {
   try {
     const pfaList = await PFA.find({ id_etudiant: { $in: [null, undefined] } }).exec();
@@ -157,6 +138,24 @@ export const getPfaByEnseignantId = async (req, res) => {
   }
 };
 
+export const getTechnologiesByPfaId = async (req, res) => {
+  try {
+    const pfaId = req.params.id;
+    const pfa = await PFA.findById(pfaId);
+    if (!pfa) {
+      return res.status(404).json({ message: 'PFA not found' });
+    }
+    const technologies = await Technologie.find(
+      { _id: { $in: pfa.technologies } },
+      { title: 1, _id: 0 } // projection to include only the title field
+    );
+    res.status(200).json(technologies);
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({ message: 'Error getting technologies by PFA ID' });
+  }
+};
+
 export const updatePfaIsValidated = async (req, res) => {
   const { id } = req.params;
 
@@ -173,6 +172,22 @@ export const updatePfaIsValidated = async (req, res) => {
     res.json(updatedPfa);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const getStudentIdOfPFA = async (req, res) => {
+  const pfaId = req.params.id;
+
+  try {
+    const pfa = await PFA.findById(pfaId).select('id_etudiant');
+    if (!pfa) {
+      return res.status(404).json({ error: 'PFA not found' });
+    }
+    const studentId = pfa.id_etudiant;
+    return res.json({ studentId });
+  } catch (error) {
+    console.error('Error retrieving student ID:', error);
+    return res.status(500).json({ error: 'Server error' });
   }
 };
 
@@ -346,72 +361,8 @@ export const updatePFA = async (req, res) => {
       });
     });
 };
- /*
-export const getFiltrePFA = async (req, res) => {
-  try {
-    let ids_enseignant = [];
-    if (req.query.idenseignant && req.query.idenseignant.length > 0) {
-      console.log("in if", req.query.idenseignant);
-      ids_enseignant = req.query.idenseignant;
-    } else {
-      const enseignant = await Enseignant.find({}, { _id: 1 });
-      enseignant.map((el) => {
-        //console.log(el._id);
-        ids_enseignant.push(el._id);
-      });
-    }
 
-    let ids_technologies = [];
-    if (req.query.idtechnologie && req.query.idtechnologie.length > 0) {
-      console.log("in if", req.query.idtechnologie);
-      ids_technologies = req.query.idtechnologie;
-    } else {
-      const technologie = await Technologie.find({}, { _id: 1 });
-      technologie.map((el) => {
-        //console.log(el._id);
-        ids_technologies.push(el._id);
-      });
-    }
 
-    //let idsetudiant =[];
 
-    const filtrepfa = await PFA.find({
-      $or: [
-        { id_enseignant: { $in: ids_enseignant } },
-        { technologie: { $in: ids_technologies } },
-        //{id_etudiant : idsetudiant},
-      ],
-    });
-    res.status(200).json({
-      filtrepfa,
-    });
-  } catch (error) {
-    res.status(404).json({ message: error.message });
-  }
-};
 
-export const getSujet = async (req, res) => {
-  //checked
-  //choisir un sujet PFA par un etudiant
-  if (!req.body) {
-    return res.status(400).send({
-      message: "Data not specified",
-    });
-  }
 
-  const id = req.params.id;
-
-  PFA.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-    .then((data) => {
-      if (!data) {
-        res.status(404).send({
-          message: `Cannot update PFA with id=${id}. Maybe PFA was not found!`,
-        });
-      } else res.send({ message: "PFA was updated and given successfully." });
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error updating PFA with id=" + id,
-      });
-    });
-}; */

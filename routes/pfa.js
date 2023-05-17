@@ -5,7 +5,6 @@ import {
   createpfa,
   deletePFA,
   getAllPfa,
-  //getFiltrePFA,
   getPfa,
   updatepfa,
   getTechnologiesByPfaId,
@@ -17,7 +16,7 @@ import {
   getAllTeachersByPfa,
   updatePfaIsValidated,
   getPfaNotValidated,
-  //getSujet,
+  getStudentIdOfPFA,
 } from "../controllers/pfa.js";
 
 router.post("/updateidstudentinpfa/:id", updatePfaIdEtudiant);
@@ -31,9 +30,9 @@ router.get("/getstudentbypfaid/:id", getStudentByPfaId);
 router.get("/getteacherbypfaid/:id", getTeacherByPfaId);
 router.get("/getpfabyid/:id", getPfa);
 router.delete("/deletepfa/:id", deletePFA);
-router.get("/getAllPfa", getAllPfa)
+router.get("/getAllPfa", getAllPfa);
+router.get("/getstudentforcv/:id", getStudentIdOfPFA);
 router.put("/updatepfa/:id", updatepfa);
 router.post("/updatevalidatepfa/:id", updatePfaIsValidated);
-/*router.get("/filtre", getFiltrePFA);
-router.put("/attribut/:id", getSujet);*/
+
 export default router;

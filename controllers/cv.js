@@ -48,6 +48,27 @@ export const getCv = async (req, res) => {
   }
 };
 
+export const getCVByUser = async (req, res) => {
+  const { firstname, lastname } = req.query;
+
+  try {
+    const cv = await Cv.findOne({
+      firstname: firstname,
+      lastname: lastname,
+    }); 
+
+    if (!cv) {
+      return res.status(404).json({ error: 'CV not found' });
+    }
+
+    res.json(cv);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
 export const getCvByIdUser = async (req, res) => {
   try {
     const cv = await Cv.findOne({ iduser: req.params.iduser });
