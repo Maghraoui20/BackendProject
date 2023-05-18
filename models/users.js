@@ -70,7 +70,7 @@ const UserSchema = mongoose.Schema({
     enum: ["enseignant", "responsable formation"],
   },
   accessRights: {
-    type: String,
+    type: [String],
     required: false,
     enum: ["gestion-etudiant", "gestion-enseignant","gestion-evenement"],
   },
