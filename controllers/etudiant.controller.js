@@ -3,7 +3,8 @@ import csvtojson from "csvtojson";
 import Etudiants from "../models/etudiants.js";
 import bcrypt from "bcrypt";
 import Users from "../models/users.js";
-
+import csv from "csv-parser";
+import fs from "fs";
 export const create = async (req, res) => {
   //checked
   try {
@@ -130,6 +131,23 @@ export const findAllCond = (req, res) => {
         message:
           err.message || "Some error occurred while retrieving Etudiants.",
       });
+    });
+};
+export const upload = (req, res) => {
+  console.log(1);
+  const file = req.body.file;
+  console.log(1);
+  if (!file) {
+    return res.status(400).send("No file uploaded");
+  }
+  console.log(1);
+  const results = [];
+  console.log(1);
+  fs.createReadStream(file.tempFilePath)
+    .pipe(csv())
+    .on("data", (data) => results.push(data))
+    .on("end", () => {
+      res.send(results);
     });
 };
 export const importExcel = async (req, res) => {

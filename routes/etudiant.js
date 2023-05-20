@@ -12,6 +12,7 @@ import {
   findAllCond,
   importExcel,
   signin,
+  upload,
 } from "../controllers/etudiant.controller.js";
 
 router.post("/create", create);
@@ -24,5 +25,6 @@ router.delete("/deletebyid/:id", deleteEt);
 router.delete("/deleteAll", deleteAll);
 router.post("/signin", signin);
 router.get("/finCond?:phone", findAllCond);
+router.post("/upload", upload);
 
 export default router;

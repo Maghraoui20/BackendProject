@@ -3,7 +3,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 
-import cvRoute from "./routes/cv.js"
+import cvRoute from "./routes/cv.js";
 import Enseignantroutes from "./routes/enseignant.js";
 import Formationroutes from "./routes/formation.js";
 import EtudiantRoute from "./routes/etudiant.js";
@@ -20,7 +20,7 @@ import alumnisRoute from "./routes/alumni.js";
 import stageEteRoute from "./routes/stage.routes.js";
 import usersRoute from "./routes/users.js";
 import passwordResetRoute from "./routes/passwordReset.routes.js";
-
+import postsRoute from "./routes/post.route.js";
 var app = express();
 
 app.use(bodyParser.json({ limit: "40mb", extended: true }));
@@ -44,7 +44,7 @@ app.use("/stage", stageEteRoute);
 app.use("/users", usersRoute);
 app.use("/cv", cvRoute);
 app.use("/reset", passwordResetRoute);
-
+app.use("/posts", postsRoute);
 const CONNECTION_URL =
   "mongodb+srv://2ingweb:2ingweb@cluster0.l4xvlhw.mongodb.net";
 const PORT = process.env.PORT || 5000;
