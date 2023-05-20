@@ -17,6 +17,7 @@ import {
   updatePfaIsValidated,
   getPfaNotValidated,
   getStudentIdOfPFA,
+  getpfabyidetudiant
 } from "../controllers/pfa.js";
 
 router.post("/updateidstudentinpfa/:id", updatePfaIdEtudiant);
