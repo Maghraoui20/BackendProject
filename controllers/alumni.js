@@ -2,6 +2,8 @@ import Alumni from "../models/alumnis.js";
 import Users from "../models/users.js";
 import { UniqueString } from "unique-string-generator";
 import sendEmail from "../utils/sendEmail.js";
+import moment from "moment/moment.js";
+import Demandes from "../models/demandes.js";
 
 export const findAll = async (req, res) => {
   try {
@@ -38,6 +40,9 @@ export const create = async (req, res) => {
       res.status(400).send({ message: "Content can not be empty!" });
       return;
     }
+    const date1 = moment(req.body.date_diplome, "YYYY-MM-DD");
+    const date2 = moment(req.body.date_embauche, "YYYY-MM-DD");
+    const _duree_chomage = date2.diff(date1, "days");
     const body = {
       firstname: req.body.firstname,
       lastname: req.body.lastname,
@@ -54,6 +59,7 @@ export const create = async (req, res) => {
       date_embauche: req.body.date_embauche,
       demande: false,
       report: false,
+      duree_chomage: _duree_chomage,
       code: UniqueString(),
     };
 
@@ -65,12 +71,13 @@ export const create = async (req, res) => {
       body.firstname +
       ", votre code compte alumni est : " +
       body.code;
-    await sendEmail(body.email, "Votre code compte Alumni", mail);
+
     if (!saved_alumni) {
       return res.status(500).send({
         message: "Some error occurred while creating the Alumni.",
       });
     }
+    await sendEmail(body.email, "Votre code compte Alumni", mail);
     return res.status(200).send(alum);
   } catch (err) {
     res.status(500).send({
@@ -192,4 +199,78 @@ export const getAlumniStatistics = async (req, res) => {
     alumniByCompany,
     alumniByGraduationYear,
   });
+};
+export const statistiqueChomage = async (req, res) => {
+  Alumni.aggregate([
+    {
+      $group: {
+        _id: "$promotion",
+        moyenne_chomage: { $avg: "$duree_chomage" },
+      },
+    },
+    {
+      $sort: {
+        _id: 1,
+      },
+    },
+  ])
+    .then((resultat) => {
+      res.send(resultat);
+    })
+    .catch((erreur) => {
+      console.error(erreur);
+    });
+};
+export const getAlumniByPromotion = async (req, res) => {
+  const promotion = req.body.promotion;
+  try {
+    const alumni = await Alumni.find({ promotion });
+    const stats = {};
+
+    alumni.forEach((alumnus) => {
+      const { pays } = alumnus;
+
+      if (!stats[pays]) {
+        stats[pays] = 1;
+      } else {
+        stats[pays]++;
+      }
+    });
+
+    return stats;
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const addDemande = async (req, res) => {
+  try {
+    // Validate request
+    if (!req.body) {
+      res.status(400).send({ message: "Content can not be empty!" });
+      return;
+    }
+    const body = {
+      idAlumni: req.body.idAlumni,
+      idDirecteur: req.body.idAlumni,
+      status: req.body.status,
+      vacation: req.body.vacation,
+      expert: req.body.expert,
+      matiere: req.body.matiere,
+      description: req.body.description,
+    };
+
+    const demande = new Demandes(body);
+
+    const saved_demande = await demande.save(demande);
+    if (!saved_demande) {
+      return res.status(500).send({
+        message: "Some error occurred while creating the demand.",
+      });
+    }
+    return res.status(200).send(demande);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating the demand.",
+    });
+  }
 };

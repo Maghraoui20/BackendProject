@@ -13,7 +13,6 @@ const AlumnisSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-
   password: {
     type: String,
     required: false,
@@ -64,8 +63,12 @@ const AlumnisSchema = mongoose.Schema({
     required: false,
     default: false,
   },
-  code:{
+  code: {
     type: String,
+    required: true,
+  },
+  duree_chomage: {
+    type: Number,
     required: true,
   },
 });
