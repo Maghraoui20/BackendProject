@@ -8,16 +8,25 @@ router.post("/createSaison", async (req, res) => {
           res.status(400).send({ message: "Content can not be empty!" });
           return;
         }
-    
-        const saison = new Saison(req.body);
-    
-        const saved_saison= await saison.save(saison);
-        if (!saved_saison) {
-          return res.status(500).send({
-            message: "Some error occurred while creating the Intership.",
+     
+          const saisonexist = await Saison.findOne({
+            AnneeUniv: req.body.AnneeUniv,
+          
           });
-        }
-        return res.status(200).send(saison);
+          if (saisonexist) {
+            res.status(400).send({ message: "saison exist" });
+            return;} else {
+
+              const saison = new Saison(req.body);
+          
+              const saved_saison= await saison.save(saison);
+              if (!saved_saison) {
+                return res.status(500).send({
+                  message: "Some error occurred while creating the Intership.",
+                });
+              }
+              return res.status(200).send(saison);
+            }
       } catch (err) {
         res.status(500).send({
           message:
@@ -27,4 +36,15 @@ router.post("/createSaison", async (req, res) => {
    
   });
 
+  router.get("/findSaison", async (req, res) => {
+    const AnneeUniv= req.body.AnneeUniv;
+
+    try {
+      const saison = await Saison.find({AnneeUniv: AnneeUniv});
+      res.status(200).send(saison);
+    }catch (error) {
+      res.status(400).send(error);
+    }
+   
+  });
   export default router;

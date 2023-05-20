@@ -21,7 +21,10 @@ import stageEteRoute from "./routes/stage.js";
 import usersRoute from "./routes/users.js";
 import passwordResetRoute from "./routes/passwordReset.routes.js";
 import TechnologieRoute from "./routes/technologie.js"
-
+import saisonRoute from "./routes/saison.js"
+import notificationRoute from "./routes/notification.js"
+import Server from 'socket.io';
+import http from 'http';
 var app = express();
 
 app.use(bodyParser.json({ limit: "40mb", extended: true }));
@@ -58,13 +61,18 @@ const CONNECTION_URL =
   const server = http.createServer(options, app);
   export const Socket = {
     emit: function (event, data) {
-      console.log(data,"dd");
-      io.sockets.to(data.user).emit(event, data);
+      console.log('event, data==========>', data.user.toString())
+
+      io.sockets.to(data.user.toString()).emit(event, data);
     }
   };
-const PORT = process.env.PORT || 5000;
+const PORT = 5000;
 io.on('connect', function (socket) {
+  console.log('connect=========>')
+
   socket.on('join', async (user_id, callback) => {
+    console.log('user_id==========>', user_id)
+
     socket.join(user_id);
     callback();
   });

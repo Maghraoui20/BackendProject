@@ -185,12 +185,17 @@ router.put("/updatebyid/:id", async (req, res) => {
   const id = req.params.id;
 
   Users.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-    .then((data) => {
+    .then(async (data) => {
       if (!data) {
         res.status(404).send({
           message: `Cannot update user with id=${id}. Maybe user was not found!`,
         });
-      } else res.send({ message: "user was updated successfully." });
+      } else {
+       const userup = await Users.findById(id)
+       console.log(userup);
+        res.send(userup) 
+        
+      };
     })
     .catch((err) => {
       res.status(500).send({
