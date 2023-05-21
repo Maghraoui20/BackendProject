@@ -2,6 +2,8 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
+import schedule from 'node-schedule';
+import sendEmail from "./utils/sendEmail.js";
 
 import cvRoute from "./routes/cv.js"
 import Enseignantroutes from "./routes/enseignant.js";
@@ -25,6 +27,7 @@ import saisonRoute from "./routes/saison.js"
 import notificationRoute from "./routes/notification.js"
 import Server from 'socket.io';
 import http from 'http';
+import Users from "./models/users.js";
 var app = express();
 
 app.use(bodyParser.json({ limit: "40mb", extended: true }));
@@ -93,3 +96,37 @@ mongoose
   .catch((error) => console.log(error.message));
   
 mongoose.set("strictQuery", false);
+
+const url = `http://localhost:3000/update-etudiant-cv`;
+schedule.scheduleJob(' 0 0 1 */7 *', async function () { 
+  const data = await Users.find({role:'etudiant'})
+  console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); //chaque mois mois du juillet
+  data.forEach(async (user) => {
+    await sendEmail(user.email, "Add date d'optention du diplome", url);
+  });
+});
+
+const url2 = `http://localhost:3000/signin`; //*/1 * * * * * chaque seconde
+schedule.scheduleJob('0 0 1 */7 *', async function () { 
+  const data = await Users.find({role:'etudiant'})
+  console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); // chaque mois du juillet fin sem2
+  data.forEach(async (user) => {
+    await sendEmail(user.email, "faire des mise à jour des compétences acquises", url2);
+  });
+});
+
+schedule.scheduleJob('0 0 1 */2 *', async function () { 
+  const data = await Users.find({role:'etudiant'})
+  console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); //mois du fevrier fin sem1
+  data.forEach(async (user) => {
+    await sendEmail(user.email, "faire des mise à jour des compétences acquises", url2);
+  });
+});
+
+schedule.scheduleJob('0 0 1 */6 *', async function () { 
+  const data = await Users.find({role:'etudiant'})
+  console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); // chaque mois du juin fin sem2
+  data.forEach(async (user) => {
+    await sendEmail(user.email, "l'email contient un lien qui l'ammène vers l'application pour ajouter un nouveau travail", url);
+  });
+});
