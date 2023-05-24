@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import axios from 'axios';
+import axios from "axios";
 import Users from "../models/users.js";
 import PFA from "../models/pfa.js";
-import Technologie from "../models/technologie.js"
+import Technologie from "../models/technologie.js";
 
 export const saveTechnologies = async (technologies) => {
   const technologyIds = [];
@@ -23,13 +23,15 @@ export const saveTechnologies = async (technologies) => {
 
 export const getPfaWithoutEtudiant = async (req, res) => {
   try {
-    const pfaList = await PFA.find({ id_etudiant: { $in: [null, undefined] } }).exec();
+    const pfaList = await PFA.find({
+      id_etudiant: { $in: [null, undefined] },
+    }).exec();
     return res.json(pfaList);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: "Server error" });
   }
-}
+};
 
 export const getPfaNotValidated = async (req, res) => {
   try {
@@ -37,10 +39,9 @@ export const getPfaNotValidated = async (req, res) => {
     return res.json(pfaList);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: "Server error" });
   }
 };
-
 
 export const updatePfaIdEtudiant = async (req, res) => {
   const { id } = req.params;
@@ -50,7 +51,9 @@ export const updatePfaIdEtudiant = async (req, res) => {
     const existingPfa = await PFA.findOne({ id_etudiant });
 
     if (existingPfa) {
-      return res.status(400).json({ message: "This student is already assigned to another PFA" });
+      return res
+        .status(400)
+        .json({ message: "This student is already assigned to another PFA" });
     }
 
     const pfa = await PFA.findById(id);
@@ -61,7 +64,8 @@ export const updatePfaIdEtudiant = async (req, res) => {
 
     // update only if id_etudiant is provided
     if (id_etudiant !== undefined) {
-      pfa.id_etudiant = id_etudiant === null ? '' : id_etudiant;
+      pfa.id_etudiant = id_etudiant === null ? "" : id_etudiant;
+      pfa.isAffected = true; // Set isAffected to true
     }
 
     const updatedPfa = await pfa.save();
@@ -71,13 +75,12 @@ export const updatePfaIdEtudiant = async (req, res) => {
   }
 };
 
-
 export const getStudentByPfaId = async (req, res) => {
   try {
     const pfaId = req.params.id;
     const pfa = await PFA.findById(pfaId);
     if (!pfa) {
-      return res.status(404).json({ message: 'PFA not found' });
+      return res.status(404).json({ message: "PFA not found" });
     }
     const id_etudiant = await Users.find(
       { _id: { $in: pfa.id_etudiant } },
@@ -86,7 +89,7 @@ export const getStudentByPfaId = async (req, res) => {
     res.status(200).json(id_etudiant);
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: 'Error getting student by PFA ID' });
+    res.status(500).json({ message: "Error getting student by PFA ID" });
   }
 };
 
@@ -104,18 +107,16 @@ export const getAllTeachersByPfa = async (req, res) => {
     res.status(200).json(allTeachers);
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: 'Error getting all teachers by PFA' });
+    res.status(500).json({ message: "Error getting all teachers by PFA" });
   }
 };
-
-
 
 export const getTeacherByPfaId = async (req, res) => {
   try {
     const pfaId = req.params.id;
     const pfa = await PFA.findById(pfaId);
     if (!pfa) {
-      return res.status(404).json({ message: 'PFA not found' });
+      return res.status(404).json({ message: "PFA not found" });
     }
     const id_enseignant = await Users.find(
       { _id: { $in: pfa.id_enseignant } },
@@ -124,7 +125,7 @@ export const getTeacherByPfaId = async (req, res) => {
     res.status(200).json(id_enseignant);
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: 'Error getting teacher by PFA ID' });
+    res.status(500).json({ message: "Error getting teacher by PFA ID" });
   }
 };
 
@@ -143,7 +144,7 @@ export const getTechnologiesByPfaId = async (req, res) => {
     const pfaId = req.params.id;
     const pfa = await PFA.findById(pfaId);
     if (!pfa) {
-      return res.status(404).json({ message: 'PFA not found' });
+      return res.status(404).json({ message: "PFA not found" });
     }
     const technologies = await Technologie.find(
       { _id: { $in: pfa.technologies } },
@@ -152,7 +153,7 @@ export const getTechnologiesByPfaId = async (req, res) => {
     res.status(200).json(technologies);
   } catch (e) {
     console.log(e);
-    res.status(500).json({ message: 'Error getting technologies by PFA ID' });
+    res.status(500).json({ message: "Error getting technologies by PFA ID" });
   }
 };
 
@@ -179,18 +180,17 @@ export const getStudentIdOfPFA = async (req, res) => {
   const pfaId = req.params.id;
 
   try {
-    const pfa = await PFA.findById(pfaId).select('id_etudiant');
+    const pfa = await PFA.findById(pfaId).select("id_etudiant");
     if (!pfa) {
-      return res.status(404).json({ error: 'PFA not found' });
+      return res.status(404).json({ error: "PFA not found" });
     }
     const studentId = pfa.id_etudiant;
     return res.json({ studentId });
   } catch (error) {
-    console.error('Error retrieving student ID:', error);
-    return res.status(500).json({ error: 'Server error' });
+    console.error("Error retrieving student ID:", error);
+    return res.status(500).json({ error: "Server error" });
   }
 };
-
 
 export const createpfa = async (req, res) => {
   try {
@@ -236,7 +236,7 @@ export const createpfa = async (req, res) => {
 
 export const updatepfa = async (req, res) => {
   try {
-    const pfaId = req.params.id; // assuming the id is passed as a URL parameter
+    const pfaId = req.params.id;
     const {
       sujet,
       titre,
@@ -336,7 +336,6 @@ export const deletePFA = async (req, res) => {
   }
 };
 
-
 export const updatePFA = async (req, res) => {
   //checked
   if (!req.body) {
@@ -346,7 +345,7 @@ export const updatePFA = async (req, res) => {
   }
 
   const id = req.params.id;
-  
+
   PFA.findByIdAndUpdate({ id }, req.body, { useFindAndModify: false })
     .then((data) => {
       if (!data) {
@@ -361,8 +360,3 @@ export const updatePFA = async (req, res) => {
       });
     });
 };
-
-
-
-
-
