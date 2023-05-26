@@ -108,4 +108,28 @@ export const updateCv = (req, res) => {
     });
 };
 
+export const updateCV = (req, res) => {
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update cannot be empty!",
+    });
+  }
 
+  const id = req.params.id;
+
+  Cv.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then((data) => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update CV with id=${id}. Maybe CV was not found!`,
+        });
+      } else {
+        res.send({ message: "CV was updated successfully." });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: "Error updating CV with id=" + id,
+      });
+    });
+};
