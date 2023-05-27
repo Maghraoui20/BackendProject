@@ -133,3 +133,22 @@ export const updateCV = (req, res) => {
       });
     });
 };
+
+export const updateCvMode = async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const cv = await Cv.findById(id);
+
+    if (!cv) {
+      return res.status(404).json({ error: 'CV not found' });
+    }
+
+    cv.mode = 'dark';
+    const updatedCv = await cv.save();
+
+    return res.status(200).json({ message: 'CV mode updated to dark', cv: updatedCv });
+  } catch (error) {
+    return res.status(500).json({ error: 'An error occurred while updating the CV mode' });
+  }
+};

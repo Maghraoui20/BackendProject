@@ -78,6 +78,11 @@ const cvSchema = mongoose.Schema({
     type: String,
     required: false,
   },
+  mode: {
+    type: String,
+    required: false,
+    default: 'light',
+  },
   iduser: { type: mongoose.Schema.ObjectId, ref: "users" },
 });
 
