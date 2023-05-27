@@ -217,6 +217,15 @@ router.get("/getAllEtudiant", async (req, res) => {
   }
 });
 
+router.get("/getAllAdministartif", async (req, res) => {
+  try {
+    const usrs = await Users.find({ role: "directeur" });
+    res.status(200).send(usrs);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
 // Statistique users  --> checked
 router.get("/getcount", async (req, res) => {
   // token of directeur

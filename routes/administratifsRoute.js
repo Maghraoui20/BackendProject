@@ -69,7 +69,7 @@ router.post("/", async (req, res) => {
 });
 
 // Afficher liste des administratifs --> checked
-router.get("/", async (req, res) => {
+router.get("/getAllAdministartif", async (req, res) => {
   // auth --> token of directeur
   try {
     const admins = await Administratifs.find();
@@ -78,6 +78,8 @@ router.get("/", async (req, res) => {
     res.status(400).send(error);
   }
 });
+
+
 
 // Statistique administratifs  --> checked
 router.get("/getcount", async (req, res) => {
