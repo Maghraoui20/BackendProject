@@ -3,6 +3,7 @@ import pfe from "../models/pfe.js";
 import Users from "../models/users.js";
 import {Socket} from '../app.js';
 import Notification from "../models/notification.js";
+import { getpfebyidetudiant } from "../controllers/pfe.js";
 const router = express.Router();
 
 //import {createPfe, deletePFE, getPfe} from '../controllers/pfe.js';
@@ -183,6 +184,7 @@ router.delete("/deletebyid/:id", async (req, res) => {
       });
     });
 });
+router.get("/getpfebyidetudiant/:id", getpfebyidetudiant);
 
 
 router.get("/getstudent/:id",async (req, res) => {
