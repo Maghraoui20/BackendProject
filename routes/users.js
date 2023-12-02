@@ -6,6 +6,8 @@ import jwt from "jsonwebtoken";
 import Token from "../models/token.model.js";
 import schedule from 'node-schedule';
 import sendEmail from "../utils/sendEmail.js";
+import multer from "multer";
+import csvtojson from "csvtojson";
 
 import {
 
@@ -44,96 +46,6 @@ router.get("/logout", (req, res, next) => {
     success: true,
     message: "Logged out",
   });
-});
-
-
-
-
-router.post("/sendmaildiplome", async (req, res) => {
-  try {
-   
-    let user = await Users.findOne({ date_diplome: null });
-    if (!user)
-      return res
-        .status(409)
-        .send({ message: "User with given email does not exist!" });
-
-   
-    const url = `http://localhost:3000/update-etudiant-cv`;
-    schedule.scheduleJob('0 0 1 */7 *', async function () { 
-      const data = await Users.find({role:'etudiant'})
-      console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); //chaque mois mois du juillet
-      data.forEach(async (user) => {
-        await sendEmail(user.email, "Add date d'optention du diplome", url);
-      });
-    });
-    res
-      .status(200)
-      .send({ message: "Password reset link sent to your email account" });
-  } catch (error) {
-    res.status(500).send({ message: "Internal Server Error" });
-  }
-});
-
-router.post("/sendmailmajcompetences", async (req, res) => {
-  try {
-   
-    let user = await Users.find();
-    if (!user)
-      return res
-        .status(409)
-        .send({ message: "User with given email does not exist!" });
-
-   
-    const url = `http://localhost:3000/signin`;
-    schedule.scheduleJob('0 0 1 */7 *', async function () { 
-      const data = await Users.find({role:'etudiant'})
-      console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); // chaque mois du juillet fin sem2
-      data.forEach(async (user) => {
-        await sendEmail(user.email, "faire des mise à jour des compétences acquises", url);
-      });
-    });
-
-    schedule.scheduleJob('0 0 1 */2 *', async function () { 
-      const data = await Users.find({role:'etudiant'})
-      console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); //mois du fevrier fin sem1
-      data.forEach(async (user) => {
-        await sendEmail(user.email, "faire des mise à jour des compétences acquises", url);
-      });
-    });
-    res
-      .status(200)
-      .send({ message: "Password reset link sent to your email account" });
-  } catch (error) {
-    res.status(500).send({ message: "Internal Server Error" });
-  }
-});
-
-router.post("/sendmailtravail", async (req, res) => {
-  try {
-   
-    let user = await Users.find();
-    if (!user)
-      return res
-        .status(409)
-        .send({ message: "User with given email does not exist!" });
-
-   
-    const url = `http://localhost:3000/signin`;
-    schedule.scheduleJob('0 0 1 */6 *', async function () { 
-      const data = await Users.find({role:'etudiant'})
-      console.log('“At 00:00 on day-of-month 1 in every 7th month.”'); // chaque mois du juin fin sem2
-      data.forEach(async (user) => {
-        await sendEmail(user.email, "l'email contient un lien qui l'ammène vers l'application pour ajouter un nouveau travail", url);
-      });
-    });
-
-    res
-      .status(200)
-      .send({ message: "Password reset link sent to your email account" });
-  } catch (error) {
-    res.status(500).send({ message: "Internal Server Error" });
-  }
 });
 
 
@@ -185,12 +97,17 @@ router.put("/updatebyid/:id", async (req, res) => {
   const id = req.params.id;
 
   Users.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-    .then((data) => {
+    .then(async (data) => {
       if (!data) {
         res.status(404).send({
           message: `Cannot update user with id=${id}. Maybe user was not found!`,
         });
-      } else res.send({ message: "user was updated successfully." });
+      } else {
+       const userup = await Users.findById(id)
+       console.log(userup);
+        res.send(userup) 
+        
+      };
     })
     .catch((err) => {
       res.status(500).send({
@@ -282,6 +199,17 @@ router.get("/getAllEnseignant", async (req, res) => {
 });
 
 // Afficher liste des users --> checked
+router.get("/getAllAdministartif", async (req, res) => {
+  try {
+    const usrs = await Users.find({ role: "directeur" });
+    res.status(200).send(usrs);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+
+// Afficher liste des users --> checked
 router.get("/getAll", async (req, res) => {
   try {
     const usrs = await Users.find();
@@ -294,6 +222,15 @@ router.get("/getAll", async (req, res) => {
 router.get("/getAllEtudiant", async (req, res) => {
   try {
     const usrs = await Users.find({ role: "etudiant" });
+    res.status(200).send(usrs);
+  } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+router.get("/getAllAdministartif", async (req, res) => {
+  try {
+    const usrs = await Users.find({ role: "directeur" });
     res.status(200).send(usrs);
   } catch (error) {
     res.status(400).send(error);
@@ -331,6 +268,56 @@ router.post("/importExcel", importExcel);
 
 
 
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // Set the destination folder for uploaded files
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + '.csv'); // Set the filename for the uploaded file
+  }
+});
+
+// Create an upload object
+const upload = multer({ storage: storage });
+
+// Define the route to handle file uploads
+router.post('/uploadFile', upload.single('csvFile'),(req, res) => {
+ // router.post('/uploadFile',(req, res) => {
+  if (!req.file) {
+    res.status(400).send('No file uploaded.');
+  } else {
+    // File uploaded successfully
+    
+    const csvFilePath = req.file.path;
+    csvtojson()
+      .fromFile(csvFilePath)
+       .then((csvData) => {
+         console.log(csvData);
+         Users.insertMany(csvData)
+           .then(function () {
+             console.log("Data inserted"); //success
+             res.json({ success: "success" });
+            // res.send('File uploaded!');
+           })
+           .catch(function (error) {
+             console.log(error); //failure
+           });
+       });
+     
+
+  }
+});
+
+router.get('/public-users', async (req, res) => {
+  try {
+    const users = await Users.find({ visibility: 'public', role: { $in: ['etudiant', 'alumni'] } });
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+});
 
 //module.exports = router;
 export default router;

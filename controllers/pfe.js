@@ -55,3 +55,13 @@ export const deletePFE = async (req, res) => {
     console.log(error.message);
   }
 };
+
+export const getpfebyidetudiant= async (req, res) => {
+  try {
+    const pfes = await PFE.findOne({ id_etudiant: req.params.id });
+    res.json(pfes);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

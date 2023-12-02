@@ -2,6 +2,8 @@ import Alumni from "../models/alumnis.js";
 import Users from "../models/users.js";
 import { UniqueString } from "unique-string-generator";
 import sendEmail from "../utils/sendEmail.js";
+import moment from "moment/moment.js";
+import Demandes from "../models/demandes.js";
 
 export const findAll = async (req, res) => {
   try {
@@ -21,6 +23,16 @@ export const findAll = async (req, res) => {
     console.log(err);
   }
 };
+export const findAllalumn = async (req, res) => {
+  //checked
+  try {
+    await Alumni.find({}).then((result) => {
+      res.send(result);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
 export const create = async (req, res) => {
   try {
     // Validate request
@@ -28,35 +40,44 @@ export const create = async (req, res) => {
       res.status(400).send({ message: "Content can not be empty!" });
       return;
     }
+    const date1 = moment(req.body.date_diplome, "YYYY-MM-DD");
+    const date2 = moment(req.body.date_embauche, "YYYY-MM-DD");
+    const _duree_chomage = date2.diff(date1, "days");
     const body = {
-      "firstname": req.body.firstname,
-      "lastname": req.body.lastname,
-      "login": req.body.login,    
-      "password": req.body.password,
-      "email": req.body.email,
-      "phone": req.body.phone,
-      "Birth_date":req.body.Birth_date,
-      "Cv": req.body.cv,
-      "pays": req.body.pays,
-      "societe": req.body.societe,
-      "promotion": req.body.promotion,    
-      "date_diplome": req.body.date_diplome,
-      "date_embauche": req.body.date_embauche,
-      "demande": false,
-      "report": false,
-      "code":UniqueString(),
-    }
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      login: req.body.login,
+      password: req.body.password,
+      email: req.body.email,
+      phone: req.body.phone,
+      Birth_date: req.body.Birth_date,
+      Cv: req.body.cv,
+      pays: req.body.pays,
+      societe: req.body.societe,
+      promotion: req.body.promotion,
+      date_diplome: req.body.date_diplome,
+      date_embauche: req.body.date_embauche,
+      demande: false,
+      report: false,
+      duree_chomage: _duree_chomage,
+      code: UniqueString(),
+    };
 
     const alum = new Alumni(body);
-    
+
     const saved_alumni = await alum.save(alum);
-    const mail = "Bonjour "+ body.firstname +", votre code compte alumni est : " + body.code; 
-    await sendEmail(body.email, "Votre code compte Alumni", mail);
+    const mail =
+      "Bonjour " +
+      body.firstname +
+      ", votre code compte alumni est : " +
+      body.code;
+
     if (!saved_alumni) {
       return res.status(500).send({
         message: "Some error occurred while creating the Alumni.",
       });
     }
+    await sendEmail(body.email, "Votre code compte Alumni", mail);
     return res.status(200).send(alum);
   } catch (err) {
     res.status(500).send({
@@ -104,24 +125,25 @@ export const findOne = async (req, res) => {
   const id = req.params.id;
 
   try {
-    await Users.findById(id).then((result) => {
+    await Alumni.findById(id).then((result) => {
       res.send(result);
     });
   } catch (err) {
     console.log(err);
   }
 };
-export const getStatus = async (req, res) => { 
+export const getStatus = async (req, res) => {
   const code = req.params.code;
 
   try {
-    await Alumni.findOne({"code": code}).then((result) => {
-      if (result.demande === false){
+    await Alumni.findOne({ code: code }).then((result) => {
+      if (result.demande === false) {
         res.send({ message: "Dossier pas encore accepté" });
-      }else{
-        res.send({message :"Dossier accepté, vous pouvez vous connecter à votre espace"});
+      } else {
+        res.send({
+          message: "Dossier accepté, vous pouvez vous connecter à votre espace",
+        });
       }
-      
     });
   } catch (err) {
     console.log(err);
@@ -157,58 +179,98 @@ export const getalumnipays = async (req, res) => {
     console.log(error.message);
   }
 };
-export const validerAlumnis = async(req, res) => {
-  const data = {
-    "demande" : true
-  }
+export const getAlumniStatistics = async (req, res) => {
+  const alumniData = await Alumni.find();
 
-  const id = req.params.id;
+  const alumniByCountry = await Alumni.aggregate([
+    { $group: { _id: "$pays", count: { $sum: 1 } } },
+  ]);
 
-  Alumni.findByIdAndUpdate(id, data, { useFindAndModify: false })
-    .then((item) => {
-      if (!item) {
-        res.status(404).send({
-          message: `Cannot update user with id=${id}. Maybe user was not found!`,
-        });
-      } else{ 
-        //success lazem nthabet ml item chniya fiha
+  const alumniByCompany = await Alumni.aggregate([
+    { $group: { _id: "$societe", count: { $sum: 1 } } },
+  ]);
 
-        res.send({ message: "user was updated successfully." });
-    }
+  const alumniByGraduationYear = await Alumni.aggregate([
+    { $group: { _id: "$promotion", count: { $sum: 1 } } },
+  ]);
+
+  res.send({
+    alumniByCountry,
+    alumniByCompany,
+    alumniByGraduationYear,
+  });
+};
+export const statistiqueChomage = async (req, res) => {
+  Alumni.aggregate([
+    {
+      $group: {
+        _id: "$promotion",
+        moyenne_chomage: { $avg: "$duree_chomage" },
+      },
+    },
+    {
+      $sort: {
+        _id: 1,
+      },
+    },
+  ])
+    .then((resultat) => {
+      res.send(resultat);
     })
-    .catch((err) => {
-      res.status(500).send({
-        message: "Error updating user with id=" + id,
-      });
+    .catch((erreur) => {
+      console.error(erreur);
     });
 };
-export const getAlumniStatistics = (req, res) => {
-  
-  // agréger les statistiques par pays
-  const alumniByCountry = Alumni.reduce((acc, alumni) => {
-    const country = alumni.country;
-    acc[country] = acc[country] ? acc[country] + 1 : 1;
-    return acc;
-  }, {});
+export const getAlumniByPromotion = async (req, res) => {
+  const promotion = req.body.promotion;
+  try {
+    const alumni = await Alumni.find({ promotion });
+    const stats = {};
 
-  // agréger les statistiques par société
-  const alumniByCompany = Alumni.reduce((acc, alumni) => {
-    const company = alumni.company;
-    acc[company] = acc[company] ? acc[company] + 1 : 1;
-    return acc;
-  }, {});
+    alumni.forEach((alumnus) => {
+      const { pays } = alumnus;
 
-  // agréger les statistiques par promotion
-  const alumniByGraduationYear = Alumni.reduce((acc, alumni) => {
-    const year = alumni.graduationYear;
-    acc[year] = acc[year] ? acc[year] + 1 : 1;
-    return acc;
-  }, {});
+      if (!stats[pays]) {
+        stats[pays] = 1;
+      } else {
+        stats[pays]++;
+      }
+    });
 
-  // retourner les statistiques agrégées
-  res.send({
-    byCountry: alumniByCountry,
-    byCompany: alumniByCompany,
-    byGraduationYear: alumniByGraduationYear,
-  });
-}
+    return stats;
+  } catch (error) {
+    console.error(error);
+  }
+};
+export const addDemande = async (req, res) => {
+  try {
+    // Validate request
+    if (!req.body) {
+      res.status(400).send({ message: "Content can not be empty!" });
+      return;
+    }
+    const body = {
+      idAlumni: req.body.idAlumni,
+      idDirecteur: req.body.idAlumni,
+      status: req.body.status,
+      vacation: req.body.vacation,
+      expert: req.body.expert,
+      matiere: req.body.matiere,
+      description: req.body.description,
+    };
+
+    const demande = new Demandes(body);
+
+    const saved_demande = await demande.save(demande);
+    if (!saved_demande) {
+      return res.status(500).send({
+        message: "Some error occurred while creating the demand.",
+      });
+    }
+    return res.status(200).send(demande);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while creating the demand.",
+    });
+  }
+};

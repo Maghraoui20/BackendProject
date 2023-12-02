@@ -3,6 +3,7 @@ import pfe from "../models/pfe.js";
 import Users from "../models/users.js";
 import {Socket} from '../app.js';
 import Notification from "../models/notification.js";
+import { getpfebyidetudiant } from "../controllers/pfe.js";
 const router = express.Router();
 
 //import {createPfe, deletePFE, getPfe} from '../controllers/pfe.js';
@@ -19,6 +20,7 @@ router.get("/notencadred", async (req, res) => {
     res.status(404).json({ message: error.message });
   }
 });
+
 router.get("/getstatpfe", async (req, res) => {
   const pfeData = await pfe.find();
 
@@ -181,6 +183,24 @@ router.delete("/deletebyid/:id", async (req, res) => {
         message: "Could not delete user with id=" + id,
       });
     });
+});
+router.get("/getpfebyidetudiant/:id", getpfebyidetudiant);
+
+
+router.get("/getstudent/:id",async (req, res) => {
+  const pfeId = req.params.id;
+  try {
+    const Pfe = await pfe.findById(pfeId)
+    console.log(Pfe);;
+    if (!Pfe) {
+      return res.status(404).json({ error: "PFE not found" });
+    }
+    const studentId = Pfe.id_etudiant;
+    return res.json({ studentId });
+  } catch (error) {
+    console.error("Error retrieving student ID:", error);
+    return res.status(500).json({ error: "Server error" });
+  }
 });
 
 export default router;

@@ -1,16 +1,11 @@
 import mongoose from "mongoose";
 const pfaSchema = mongoose.Schema({
-  Description: {
-    type: String,
-    required: false,
-  },
-
   sujet: {
-    type: String,
-    required: false,
+  type: String,
+  required: false,
   },
 
-  type: {
+  titre: {
     type: String,
     required: false,
   },
@@ -18,23 +13,35 @@ const pfaSchema = mongoose.Schema({
   nbre_etudiant: {
     type: Number,
     required: false,
+    default: 1
   },
 
-  id_enseignant: {
-    type: mongoose.Schema.ObjectId,
-    ref: "Enseignant",
-  },
-
-  id_etudiant: [
-    {
-      type: mongoose.Schema.ObjectId,
-      ref: "Etudiant",
-    },
-  ],
-  technologie: {
+  description: {
     type: String,
-    default: "Null",
+    required: false,
   },
+
+  isValidated: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
+
+  isAffected: {
+    type: Boolean,
+    default: false,
+    required: false,
+  },
+
+  technologies: [
+    {
+      type: mongoose.Schema.ObjectId, ref:"technologie",
+    }
+  ],
+  
+  id_enseignant: { type: mongoose.Schema.ObjectId, ref: "users" },
+  id_etudiant: { type: mongoose.Schema.ObjectId, ref: "users" },
 });
-const pfa = mongoose.model("listepfa", pfaSchema);
+
+const pfa = mongoose.model("pfa", pfaSchema);
 export default pfa;

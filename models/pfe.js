@@ -2,36 +2,36 @@ import mongoose from "mongoose";
 const pfeSchema = mongoose.Schema({
   description: {
     type: String,
-    required: true,
+    required: false,
   },
   sujet: {
     type: String,
-    required: true,
+    required: false,
   },
   technologies: {
     type: String,
-    required: true,
+    required: false,
   },
   societe: {
     type: String,
-    required: true,
+    required: false,
   },
   duree: {
     type: String,
-    required: true,
+    required: false,
   },
   statutStage: {
     type: String,
-    required: true,
+    required: false,
     enum: ["pas encore commencé", "en cours", "validé"],
   },
   dateDébutStage: {
     type: Date,
-    required: true,
+    required: false,
   },
   dateFinStage: {
     type: Date,
-    required: true,
+    required: false,
   },
   id_enseignant: { type: mongoose.Schema.ObjectId, ref: "users" },
   emailEnseignant: {
@@ -42,9 +42,9 @@ const pfeSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  id_etudiant: [{ type: mongoose.Schema.ObjectId, ref: "users" }],
+  id_etudiant: { type: mongoose.Schema.ObjectId, ref: "users" },
   pays:{type:String,
-  required:true}
+  required:false}
 });
 const pfe = mongoose.model("listepfe", pfeSchema);
 export default pfe;

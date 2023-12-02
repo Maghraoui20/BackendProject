@@ -78,7 +78,12 @@ const cvSchema = mongoose.Schema({
     type: String,
     required: false,
   },
-  iduser: [{ type: mongoose.Schema.ObjectId, ref: "users" }],
+  mode: {
+    type: String,
+    required: false,
+    default: 'light',
+  },
+  iduser: { type: mongoose.Schema.ObjectId, ref: "users" },
 });
 
 const cv = mongoose.model("cv", cvSchema);
